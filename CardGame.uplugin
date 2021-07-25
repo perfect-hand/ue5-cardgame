@@ -1,0 +1,26 @@
+{
+	"FileVersion" : 3,
+	"Version" : 1,
+	"VersionName" : "0.0.1",
+	"FriendlyName" : "Card Game",
+	"Description" : "Provides a gameplay framework for developing card games.",
+	"Category" : "Card Game",
+	"CreatedBy" : "Nick Pruehs",
+	"CreatedByURL" : "https://github.com/npruehs",
+	"DocsURL" : "https://github.com/npruehs/ue5-cardgame",
+	"MarketplaceURL" : "",
+	"SupportURL" : "https://github.com/npruehs/ue5-cardgame/issues",
+	"EnabledByDefault" : true,
+	"CanContainContent" : false,
+	"IsBetaVersion" : true,
+	"Installed" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "CardGame",
+			"Type" : "Runtime",
+			"LoadingPhase" : "Default",
+			"WhitelistPlatforms": [ "Win64" ]
+		}
+	]
+}
