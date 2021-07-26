@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "Engine/DataAsset.h"
 
 #include "GameplayTagContainer.h"
 
@@ -15,7 +15,7 @@ class UTexture2D;
 
 
 UCLASS()
-class CARDGAME_API UCardGameCard : public UObject
+class CARDGAME_API UCardGameCard : public UDataAsset
 {
 	GENERATED_BODY()
 
