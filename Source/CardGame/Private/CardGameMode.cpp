@@ -1,0 +1,61 @@
+﻿#include "CardGameMode.h"
+
+#include "CardGameLogCategory.h"
+#include "CardGamePlayerState.h"
+
+ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	PlayerStateClass = ACardGamePlayerState::StaticClass();
+}
+
+FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
+                                     const FString& Options, const FString& Portal)
+{
+	FString ErrorMessage = Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
+	
+	if (IsValid(NewPlayerController))
+	{
+		ACardGamePlayerState* NewPlayer = NewPlayerController->GetPlayerState<ACardGamePlayerState>();
+
+		if (IsValid(NewPlayer))
+		{
+			// Find first available player index.
+			int32 NewPlayerIndex = 0;
+			bool bPlayerIndexInUse = true;
+			
+			while (bPlayerIndexInUse)
+			{
+				bPlayerIndexInUse = IsPlayerIndexInUse(NewPlayerIndex);
+
+				if (bPlayerIndexInUse)
+				{
+					++NewPlayerIndex;
+				}
+			}
+
+			// Set player index.
+			NewPlayer->SetPlayerIndex(NewPlayerIndex);
+
+			UE_LOG(LogCardGame, Log, TEXT("Set player index of player %s to %d."), *NewPlayer->GetName(), NewPlayerIndex);
+			
+			// Store player reference.
+			Players.Add(NewPlayer);
+		}
+	}
+
+	return ErrorMessage;
+}
+
+bool ACardGameMode::IsPlayerIndexInUse(int32 PlayerIndex) const
+{
+	for (ACardGamePlayerState* ExistingPlayer : Players)
+	{
+		if (IsValid(ExistingPlayer) && ExistingPlayer->GetPlayerIndex() == PlayerIndex)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
