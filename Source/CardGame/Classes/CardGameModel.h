@@ -8,13 +8,15 @@
 
 #include "CardGameModel.generated.h"
 
+class UCardGameCardPile;
+
 USTRUCT()
 struct CARDGAME_API FCardGameModel
 {
 	GENERATED_BODY()
 
 public:
-	void AddPlayer(int32 PlayerIndex, TArray<TSubclassOf<UCardGameCardPile>> CardPileClasses);
+	void AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses);
 	
 private:
 	FCardGameScopedModel GlobalModel;

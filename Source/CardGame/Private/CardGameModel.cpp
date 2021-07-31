@@ -1,11 +1,11 @@
 ﻿#include "CardGameModel.h"
 
-void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<TSubclassOf<UCardGameCardPile>> CardPileClasses)
+void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses)
 {
 	FCardGamePlayerModel NewPlayer;
 	NewPlayer.SetPlayerIndex(PlayerIndex);
 
-	for (const TSubclassOf<UCardGameCardPile> CardPileClass : CardPileClasses)
+	for (UCardGameCardPile* CardPileClass : CardPileClasses)
 	{
 		NewPlayer.AddCardPile(CardPileClass);
 	}

@@ -10,7 +10,7 @@ class CARDGAME_API UCardGameCardPile : public UDataAsset
 {
 	GENERATED_BODY()
 
-protected:
+private:
 	UPROPERTY(EditDefaultsOnly)
 	ECardGameScope Scope;
 };

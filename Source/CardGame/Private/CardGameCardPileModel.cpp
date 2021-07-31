@@ -1,11 +1,16 @@
 ﻿#include "CardGameCardPileModel.h"
 
-TSubclassOf<UCardGameCardPile> FCardGameCardPileModel::GetCardPileClass() const
+FCardGameCardPileModel::FCardGameCardPileModel()
+{
+	CardPileClass = nullptr;
+}
+
+UCardGameCardPile* FCardGameCardPileModel::GetCardPileClass() const
 {
 	return CardPileClass;
 }
 
-void FCardGameCardPileModel::SetCardPileClass(TSubclassOf<UCardGameCardPile> InCardPileClass)
+void FCardGameCardPileModel::SetCardPileClass(UCardGameCardPile* InCardPileClass)
 {
 	CardPileClass = InCardPileClass;
 }

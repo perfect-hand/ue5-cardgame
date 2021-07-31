@@ -10,7 +10,7 @@ void FCardGamePlayerModel::SetPlayerIndex(int32 InPlayerIndex)
 	PlayerIndex = InPlayerIndex;
 }
 
-void FCardGamePlayerModel::AddCardPile(TSubclassOf<UCardGameCardPile> CardPileClass)
+void FCardGamePlayerModel::AddCardPile(UCardGameCardPile* CardPileClass)
 {
 	FCardGameCardPileModel NewCardPile;
 	NewCardPile.SetCardPileClass(CardPileClass);

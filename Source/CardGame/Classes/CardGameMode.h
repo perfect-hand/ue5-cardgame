@@ -3,11 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
-#include "CardGameCardPile.h"
 #include "CardGameModel.h"
 
 #include "CardGameMode.generated.h"
 
+class UCardGameCardPile;
 class ACardGamePlayerState;
 
 UCLASS()
@@ -24,7 +24,7 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UCardGameCardPile>> CardPileClasses;
+	TArray<UCardGameCardPile*> CardPileClasses;
 	
 	UPROPERTY()
 	FCardGameModel Model;

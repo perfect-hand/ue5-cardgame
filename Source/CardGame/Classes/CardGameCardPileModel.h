@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 
 #include "CardGameCardModel.h"
-#include "CardGameCardPile.h"
-#include "Templates/SubclassOf.h"
 
 #include "CardGameCardPileModel.generated.h"
+
+class UCardGameCardPile;
 
 USTRUCT()
 struct CARDGAME_API FCardGameCardPileModel
@@ -14,10 +14,14 @@ struct CARDGAME_API FCardGameCardPileModel
 	GENERATED_BODY()
 
 public:
-	TSubclassOf<UCardGameCardPile> GetCardPileClass() const;
-	void SetCardPileClass(TSubclassOf<UCardGameCardPile> InCardPileClass);
+	FCardGameCardPileModel();
+	
+	UCardGameCardPile* GetCardPileClass() const;
+	void SetCardPileClass(UCardGameCardPile* InCardPileClass);
 	
 private:
-	TSubclassOf<UCardGameCardPile> CardPileClass;
+	UPROPERTY()
+	UCardGameCardPile* CardPileClass;
+	
 	TArray<FCardGameCardModel> Cards;
 };

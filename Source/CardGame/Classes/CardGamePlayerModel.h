@@ -7,6 +7,8 @@
 
 #include "CardGamePlayerModel.generated.h"
 
+class UCardGameCardPile;
+
 USTRUCT()
 struct CARDGAME_API FCardGamePlayerModel
 {
@@ -15,7 +17,7 @@ struct CARDGAME_API FCardGamePlayerModel
 public:
 	int32 GetPlayerIndex() const;
 	void SetPlayerIndex(int32 InPlayerIndex);
-	void AddCardPile(TSubclassOf<UCardGameCardPile> CardPileClass);
+	void AddCardPile(UCardGameCardPile* CardPileClass);
 	
 private:
 	int32 PlayerIndex;
