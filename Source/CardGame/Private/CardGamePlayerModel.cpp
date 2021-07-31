@@ -21,7 +21,8 @@ void FCardGamePlayerModel::AddCardPile(UCardGameCardPile* CardPileClass)
 	PlayerCardPiles.Add(NewCardPile);
 }
 
-void FCardGamePlayerModel::AddCardToCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
+void FCardGamePlayerModel::AddCardToCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass,
+	FCardGameCardInstanceIdPool& CardInstanceIdPool)
 {
 	for (FCardGameCardPileModel& CardPile : PlayerCardPiles)
 	{
@@ -34,11 +35,6 @@ void FCardGamePlayerModel::AddCardToCardPile(UCardGameCardPile* CardPileClass, U
 			return;
 		}
 	}
-}
-
-void FCardGamePlayerModel::SetCardInstanceIdPool(FCardGameCardInstanceIdPool& InCardInstanceIdPool)
-{
-	CardInstanceIdPool = InCardInstanceIdPool;
 }
 
 void FCardGamePlayerModel::ShuffleCardPile(UCardGameCardPile* CardPileClass, FRandomStream& RandomStream)
