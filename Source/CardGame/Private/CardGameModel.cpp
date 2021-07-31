@@ -1,5 +1,10 @@
 ﻿#include "CardGameModel.h"
 
+FCardGameModel::FCardGameModel()
+{
+	RandomStream = FRandomStream(FName());
+}
+
 void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses)
 {
 	FCardGamePlayerModel NewPlayer;

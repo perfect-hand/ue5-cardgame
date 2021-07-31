@@ -17,6 +17,8 @@ struct CARDGAME_API FCardGameModel
 	GENERATED_BODY()
 
 public:
+	FCardGameModel();
+	
 	void AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses);
 	void AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	void ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass);
