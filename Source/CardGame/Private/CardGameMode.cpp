@@ -44,6 +44,23 @@ void ACardGameMode::ShufflePlayerCardPile(AController* Player, UCardGameCardPile
 	Model.ShufflePlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass);
 }
 
+void ACardGameMode::MoveCardBetweenPlayerPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
+{
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
+
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	Model.MoveCardBetweenPlayerCardPiles(PlayerState->GetPlayerIndex(), From, To, CardIndex);
+}
+
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
                                      const FString& Options, const FString& Portal)
 {

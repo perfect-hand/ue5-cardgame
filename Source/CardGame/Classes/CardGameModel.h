@@ -20,6 +20,7 @@ public:
 	void AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses);
 	void AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	void ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass);
+	void MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex);
 	
 private:
 	FCardGameScopedModel GlobalModel;

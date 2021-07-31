@@ -21,6 +21,9 @@ public:
 	void SetCardPileClass(UCardGameCardPile* InCardPileClass);
 
 	void AddCard(int64 InstanceId, UCardGameCard* CardClass);
+	void AddCard(FCardGameCardModel Card);
+	FCardGameCardModel GetCard(int32 Index) const;
+	void RemoveCard(int32 Index);
 	void Shuffle(FRandomStream& RandomStream);
 	
 private:

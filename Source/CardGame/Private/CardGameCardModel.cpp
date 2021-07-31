@@ -10,3 +10,13 @@ FCardGameCardModel::FCardGameCardModel(int64 InInstanceId, UCardGameCard* InCard
 	InstanceId = InInstanceId;
 	CardClass = InCardClass;
 }
+
+int64 FCardGameCardModel::GetInstanceId() const
+{
+	return InstanceId;
+}
+
+UCardGameCard* FCardGameCardModel::GetCardClass() const
+{
+	return CardClass;
+}

@@ -22,9 +22,12 @@ public:
 	void AddCardToCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass,
 		FCardGameCardInstanceIdPool& CardInstanceIdPool);
 	void ShuffleCardPile(UCardGameCardPile* CardPileClass, FRandomStream& RandomStream);
+	void MoveCardBetweenPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 Index);
 	
 private:
 	uint8 PlayerIndex;
 	FCardGameScopedModel PlayerModel;
 	TArray<FCardGameCardPileModel> PlayerCardPiles;
+
+	FCardGameCardPileModel* GetCardPile(UCardGameCardPile* CardPileClass);
 };

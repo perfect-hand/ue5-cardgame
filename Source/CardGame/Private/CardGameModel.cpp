@@ -36,3 +36,15 @@ void FCardGameModel::ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile*
 		}
 	}
 }
+
+void FCardGameModel::MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
+{
+	for (FCardGamePlayerModel& Player : Players)
+	{
+		if (Player.GetPlayerIndex() == PlayerIndex)
+		{
+			Player.MoveCardBetweenPiles(From, To, CardIndex);
+			return;
+		}
+	}
+}
