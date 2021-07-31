@@ -6,6 +6,7 @@
 
 #include "CardGameCardPileModel.generated.h"
 
+class UCardGameCard;
 class UCardGameCardPile;
 
 USTRUCT()
@@ -18,6 +19,8 @@ public:
 	
 	UCardGameCardPile* GetCardPileClass() const;
 	void SetCardPileClass(UCardGameCardPile* InCardPileClass);
+
+	void AddCard(int64 InstanceId, UCardGameCard* CardClass);
 	
 private:
 	UPROPERTY()

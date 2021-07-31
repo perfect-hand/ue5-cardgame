@@ -14,3 +14,9 @@ void FCardGameCardPileModel::SetCardPileClass(UCardGameCardPile* InCardPileClass
 {
 	CardPileClass = InCardPileClass;
 }
+
+void FCardGameCardPileModel::AddCard(int64 InstanceId, UCardGameCard* CardClass)
+{
+	const FCardGameCardModel NewCard(InstanceId, CardClass);
+	Cards.Add(NewCard);
+}

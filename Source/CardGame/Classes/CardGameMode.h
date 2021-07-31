@@ -7,6 +7,9 @@
 
 #include "CardGameMode.generated.h"
 
+class AController;
+
+class UCardGameCard;
 class UCardGameCardPile;
 class ACardGamePlayerState;
 
@@ -17,6 +20,9 @@ class CARDGAME_API ACardGameMode : public AGameModeBase
 
 public:
 	ACardGameMode(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable)
+	void AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	
 protected:
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,

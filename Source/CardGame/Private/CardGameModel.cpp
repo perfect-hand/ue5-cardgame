@@ -10,5 +10,18 @@ void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> Car
 		NewPlayer.AddCardPile(CardPileClass);
 	}
 
+	NewPlayer.SetCardInstanceIdPool(CardInstanceIdPool);
 	Players.Add(NewPlayer);
+}
+
+void FCardGameModel::AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
+{
+	for (FCardGamePlayerModel& Player : Players)
+	{
+		if (Player.GetPlayerIndex() == PlayerIndex)
+		{
+			Player.AddCardToCardPile(CardPileClass, CardClass);
+			return;
+		}
+	}
 }

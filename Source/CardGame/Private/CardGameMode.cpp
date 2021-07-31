@@ -9,6 +9,24 @@ ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
 	PlayerStateClass = ACardGamePlayerState::StaticClass();
 }
 
+void ACardGameMode::AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass,
+	UCardGameCard* CardClass)
+{
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
+
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	Model.AddCardToPlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass, CardClass);
+}
+
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
                                      const FString& Options, const FString& Portal)
 {

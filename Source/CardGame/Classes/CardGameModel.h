@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 
+#include "CardGameCardInstanceIdPool.h"
 #include "CardGameCardPileModel.h"
 #include "CardGamePlayerModel.h"
 #include "CardGameScopedModel.h"
@@ -17,10 +18,13 @@ struct CARDGAME_API FCardGameModel
 
 public:
 	void AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses);
+	void AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	
 private:
 	FCardGameScopedModel GlobalModel;
 	TArray<FCardGameCardPileModel> GlobalCardPiles;
 	
 	TArray<FCardGamePlayerModel> Players;
+
+	FCardGameCardInstanceIdPool CardInstanceIdPool;
 };
