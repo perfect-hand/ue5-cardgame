@@ -19,6 +19,7 @@ struct CARDGAME_API FCardGameModel
 public:
 	void AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses);
 	void AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
+	void ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass);
 	
 private:
 	FCardGameScopedModel GlobalModel;
@@ -27,4 +28,5 @@ private:
 	TArray<FCardGamePlayerModel> Players;
 
 	FCardGameCardInstanceIdPool CardInstanceIdPool;
+	FRandomStream RandomStream;
 };

@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	
+	UFUNCTION(BlueprintCallable)
+	void ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass);
+	
 protected:
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
 		const FString& Options, const FString& Portal) override;

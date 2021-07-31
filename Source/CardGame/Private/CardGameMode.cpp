@@ -27,6 +27,23 @@ void ACardGameMode::AddCardToPlayerCardPile(AController* Player, UCardGameCardPi
 	Model.AddCardToPlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass, CardClass);
 }
 
+void ACardGameMode::ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass)
+{
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
+
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	Model.ShufflePlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass);
+}
+
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
                                      const FString& Options, const FString& Portal)
 {

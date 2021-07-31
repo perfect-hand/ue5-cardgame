@@ -21,6 +21,7 @@ public:
 	void AddCardPile(UCardGameCardPile* CardPileClass);
 	void AddCardToCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	void SetCardInstanceIdPool(FCardGameCardInstanceIdPool& InCardInstanceIdPool);
+	void ShuffleCardPile(UCardGameCardPile* CardPileClass, FRandomStream& RandomStream);
 	
 private:
 	uint8 PlayerIndex;

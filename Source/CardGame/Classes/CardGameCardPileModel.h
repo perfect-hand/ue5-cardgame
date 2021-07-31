@@ -21,6 +21,7 @@ public:
 	void SetCardPileClass(UCardGameCardPile* InCardPileClass);
 
 	void AddCard(int64 InstanceId, UCardGameCard* CardClass);
+	void Shuffle(FRandomStream& RandomStream);
 	
 private:
 	UPROPERTY()

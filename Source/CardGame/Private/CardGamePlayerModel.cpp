@@ -40,3 +40,16 @@ void FCardGamePlayerModel::SetCardInstanceIdPool(FCardGameCardInstanceIdPool& In
 {
 	CardInstanceIdPool = InCardInstanceIdPool;
 }
+
+void FCardGamePlayerModel::ShuffleCardPile(UCardGameCardPile* CardPileClass, FRandomStream& RandomStream)
+{
+	for (FCardGameCardPileModel& CardPile : PlayerCardPiles)
+	{
+		if (CardPile.GetCardPileClass() == CardPileClass)
+		{
+			CardPile.Shuffle(RandomStream);
+			UE_LOG(LogCardGame, Log, TEXT("Shuffled %s of player %d."), *CardPileClass->GetName(), PlayerIndex);
+			return;
+		}
+	}
+}

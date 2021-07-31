@@ -25,3 +25,15 @@ void FCardGameModel::AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPil
 		}
 	}
 }
+
+void FCardGameModel::ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass)
+{
+	for (FCardGamePlayerModel& Player : Players)
+	{
+		if (Player.GetPlayerIndex() == PlayerIndex)
+		{
+			Player.ShuffleCardPile(CardPileClass, RandomStream);
+			return;
+		}
+	}
+}
