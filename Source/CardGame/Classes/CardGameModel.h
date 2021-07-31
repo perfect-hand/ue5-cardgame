@@ -13,6 +13,9 @@ struct CARDGAME_API FCardGameModel
 {
 	GENERATED_BODY()
 
+public:
+	void AddPlayer(int32 PlayerIndex, TArray<TSubclassOf<UCardGameCardPile>> CardPileClasses);
+	
 private:
 	FCardGameScopedModel GlobalModel;
 	TArray<FCardGameCardPileModel> GlobalCardPiles;

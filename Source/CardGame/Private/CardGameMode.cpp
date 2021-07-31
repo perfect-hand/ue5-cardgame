@@ -41,6 +41,9 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 			
 			// Store player reference.
 			Players.Add(NewPlayer);
+
+			// Add player to model.
+			Model.AddPlayer(NewPlayerIndex, CardPileClasses);
 		}
 	}
 

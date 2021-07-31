@@ -2,6 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
+#include "CardGameCardPile.h"
+#include "CardGameModel.h"
+
 #include "CardGameMode.generated.h"
 
 class ACardGamePlayerState;
@@ -19,6 +23,12 @@ protected:
 		const FString& Options, const FString& Portal) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UCardGameCardPile>> CardPileClasses;
+	
+	UPROPERTY()
+	FCardGameModel Model;
+	
 	UPROPERTY()
 	TArray<ACardGamePlayerState*> Players;
 

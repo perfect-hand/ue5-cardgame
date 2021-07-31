@@ -13,6 +13,10 @@ struct CARDGAME_API FCardGameCardPileModel
 {
 	GENERATED_BODY()
 
+public:
+	TSubclassOf<UCardGameCardPile> GetCardPileClass() const;
+	void SetCardPileClass(TSubclassOf<UCardGameCardPile> InCardPileClass);
+	
 private:
 	TSubclassOf<UCardGameCardPile> CardPileClass;
 	TArray<FCardGameCardModel> Cards;
