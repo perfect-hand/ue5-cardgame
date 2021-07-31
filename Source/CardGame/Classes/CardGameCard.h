@@ -14,7 +14,7 @@
 class UTexture2D;
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class CARDGAME_API UCardGameCard : public UDataAsset
 {
 	GENERATED_BODY()
