@@ -16,14 +16,14 @@ struct CARDGAME_API FCardGamePlayerModel
 	GENERATED_BODY()
 
 public:
-	int32 GetPlayerIndex() const;
-	void SetPlayerIndex(int32 InPlayerIndex);
+	uint8 GetPlayerIndex() const;
+	void SetPlayerIndex(uint8 InPlayerIndex);
 	void AddCardPile(UCardGameCardPile* CardPileClass);
 	void AddCardToCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 	void SetCardInstanceIdPool(FCardGameCardInstanceIdPool& InCardInstanceIdPool);
 	
 private:
-	int32 PlayerIndex;
+	uint8 PlayerIndex;
 	FCardGameScopedModel PlayerModel;
 	TArray<FCardGameCardPileModel> PlayerCardPiles;
 

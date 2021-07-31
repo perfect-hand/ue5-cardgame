@@ -23,12 +23,12 @@ void ACardGamePlayerState::CopyProperties(APlayerState* PlayerState)
 	CardGamePlayerState->SetPlayerIndex(PlayerIndex);
 }
 
-int32 ACardGamePlayerState::GetPlayerIndex() const
+uint8 ACardGamePlayerState::GetPlayerIndex() const
 {
 	return PlayerIndex;
 }
 
-void ACardGamePlayerState::SetPlayerIndex(int32 InPlayerIndex)
+void ACardGamePlayerState::SetPlayerIndex(uint8 InPlayerIndex)
 {
 	PlayerIndex = InPlayerIndex;
 }

@@ -14,10 +14,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void CopyProperties(APlayerState* PlayerState) override;
 	
-	int32 GetPlayerIndex() const;
-	void SetPlayerIndex(int32 InPlayerIndex);
+	uint8 GetPlayerIndex() const;
+	void SetPlayerIndex(uint8 InPlayerIndex);
 	
 private:
 	UPROPERTY(Replicated)
-	int32 PlayerIndex;
+	uint8 PlayerIndex;
 };

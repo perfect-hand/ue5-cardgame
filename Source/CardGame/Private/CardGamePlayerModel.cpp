@@ -4,12 +4,12 @@
 #include "CardGameCardPile.h"
 #include "CardGameLogCategory.h"
 
-int32 FCardGamePlayerModel::GetPlayerIndex() const
+uint8 FCardGamePlayerModel::GetPlayerIndex() const
 {
 	return PlayerIndex;
 }
 
-void FCardGamePlayerModel::SetPlayerIndex(int32 InPlayerIndex)
+void FCardGamePlayerModel::SetPlayerIndex(uint8 InPlayerIndex)
 {
 	PlayerIndex = InPlayerIndex;
 }
