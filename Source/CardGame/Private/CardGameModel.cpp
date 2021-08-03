@@ -1,8 +1,19 @@
 ﻿#include "CardGameModel.h"
 
+#include "CardGameCard.h"
+#include "CardGameCardPile.h"
+#include "CardGameLogCategory.h"
+
 FCardGameModel::FCardGameModel()
 {
 	RandomStream = FRandomStream(FName());
+}
+
+void FCardGameModel::AddGlobalCardPile(UCardGameCardPile* CardPileClass)
+{
+	FCardGameCardPileModel NewCardPile;
+	NewCardPile.SetCardPileClass(CardPileClass);
+	GlobalCardPiles.Add(NewCardPile);
 }
 
 void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses)
@@ -18,6 +29,22 @@ void FCardGameModel::AddPlayer(int32 PlayerIndex, TArray<UCardGameCardPile*> Car
 	Players.Add(NewPlayer);
 }
 
+void FCardGameModel::AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
+{
+	FCardGameCardPileModel* CardPile = GetGlobalCardPile(CardPileClass);
+
+	if (!CardPile)
+	{
+		return;
+	}
+	
+	int64 NewCardInstanceId = CardInstanceIdPool.NewId();
+	CardPile->AddCard(NewCardInstanceId, CardClass);
+	
+	UE_LOG(LogCardGame, Log, TEXT("Added %s (%d) to global card pile %s."),
+		*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName());
+}
+
 void FCardGameModel::AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
 {
 	for (FCardGamePlayerModel& Player : Players)
@@ -28,6 +55,20 @@ void FCardGameModel::AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPil
 			return;
 		}
 	}
+}
+
+void FCardGameModel::ShuffleGlobalCardPile(UCardGameCardPile* CardPileClass)
+{
+	FCardGameCardPileModel* CardPile = GetGlobalCardPile(CardPileClass);
+
+	if (!CardPile)
+	{
+		return;
+	}
+	
+	CardPile->Shuffle(RandomStream);
+	
+	UE_LOG(LogCardGame, Log, TEXT("Shuffled global card pile %s."), *CardPileClass->GetName());
 }
 
 void FCardGameModel::ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass)
@@ -42,6 +83,24 @@ void FCardGameModel::ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile*
 	}
 }
 
+void FCardGameModel::MoveCardBetweenGlobalCardPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
+{
+	FCardGameCardPileModel* FromCardPile = GetGlobalCardPile(From);
+	FCardGameCardPileModel* ToCardPile = GetGlobalCardPile(To);
+	
+	if (!FromCardPile || !ToCardPile)
+	{
+		return;
+	}
+
+	FCardGameCardModel Card = FromCardPile->GetCard(CardIndex);
+	ToCardPile->AddCard(Card);
+	FromCardPile->RemoveCard(CardIndex);
+
+	UE_LOG(LogCardGame, Log, TEXT("Moved %s (%d) from global card pile %s to %s."), *Card.GetCardClass()->GetName(),
+		Card.GetInstanceId(), *From->GetName(), *To->GetName());
+}
+
 void FCardGameModel::MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
 {
 	for (FCardGamePlayerModel& Player : Players)
@@ -52,4 +111,17 @@ void FCardGameModel::MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGame
 			return;
 		}
 	}
+}
+
+FCardGameCardPileModel* FCardGameModel::GetGlobalCardPile(UCardGameCardPile* CardPileClass)
+{
+	for (FCardGameCardPileModel& CardPile : GlobalCardPiles)
+	{
+		if (CardPile.GetCardPileClass() == CardPileClass)
+		{
+			return &CardPile;
+		}
+	}
+
+	return nullptr;
 }

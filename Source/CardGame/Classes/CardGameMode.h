@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "CardGameModel.h"
+#include "CardGameScope.h"
 
 #include "CardGameMode.generated.h"
 
@@ -22,10 +23,19 @@ public:
 	ACardGameMode(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable)
+	void AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
+	
+	UFUNCTION(BlueprintCallable)
 	void AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
+
+	UFUNCTION(BlueprintCallable)
+	void ShuffleGlobalCardPile(UCardGameCardPile* CardPileClass);
 	
 	UFUNCTION(BlueprintCallable)
 	void ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass);
+
+	UFUNCTION(BlueprintCallable)
+	void MoveCardBetweenGlobalPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
 	
 	UFUNCTION(BlueprintCallable)
 	void MoveCardBetweenPlayerPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
@@ -55,5 +65,6 @@ private:
 	UPROPERTY()
 	TArray<ACardGamePlayerState*> Players;
 
+	TArray<UCardGameCardPile*> GetCardPileClassesByScope(ECardGameScope Scope) const;
 	bool IsPlayerIndexInUse(int32 PlayerIndex) const;
 };

@@ -10,6 +10,9 @@ class CARDGAME_API UCardGameCardPile : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
+	ECardGameScope GetScope() const;
+	
 private:
 	UPROPERTY(EditDefaultsOnly)
 	ECardGameScope Scope;

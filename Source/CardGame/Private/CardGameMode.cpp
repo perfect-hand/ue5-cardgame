@@ -1,5 +1,6 @@
 ﻿#include "CardGameMode.h"
 
+#include "CardGameCardPile.h"
 #include "CardGameLogCategory.h"
 #include "CardGamePlayerState.h"
 
@@ -7,6 +8,11 @@ ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PlayerStateClass = ACardGamePlayerState::StaticClass();
+}
+
+void ACardGameMode::AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
+{
+	Model.AddCardToGlobalCardPile(CardPileClass, CardClass);
 }
 
 void ACardGameMode::AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass,
@@ -27,6 +33,11 @@ void ACardGameMode::AddCardToPlayerCardPile(AController* Player, UCardGameCardPi
 	Model.AddCardToPlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass, CardClass);
 }
 
+void ACardGameMode::ShuffleGlobalCardPile(UCardGameCardPile* CardPileClass)
+{
+	Model.ShuffleGlobalCardPile(CardPileClass);
+}
+
 void ACardGameMode::ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass)
 {
 	if (!IsValid(Player))
@@ -42,6 +53,11 @@ void ACardGameMode::ShufflePlayerCardPile(AController* Player, UCardGameCardPile
 	}
 
 	Model.ShufflePlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass);
+}
+
+void ACardGameMode::MoveCardBetweenGlobalPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
+{
+	Model.MoveCardBetweenGlobalCardPiles(From, To, CardIndex);
 }
 
 void ACardGameMode::MoveCardBetweenPlayerPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
@@ -128,7 +144,8 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 			Players.Add(NewPlayer);
 
 			// Add player to model.
-			Model.AddPlayer(NewPlayerIndex, CardPileClasses);
+			const TArray<UCardGameCardPile*> PlayerCardPileClasses = GetCardPileClassesByScope(ECardGameScope::Player);
+			Model.AddPlayer(NewPlayerIndex, PlayerCardPileClasses);
 		}
 	}
 
@@ -138,8 +155,32 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 void ACardGameMode::NotifyOnPreStartGame()
 {
 	UE_LOG(LogCardGame, Log, TEXT("All %d player(s) are ready."), NumPlayers);
+
+	// Add global card piles.
+	const TArray<UCardGameCardPile*> GlobalCardPileClasses = GetCardPileClassesByScope(ECardGameScope::Global);
 	
+	for (UCardGameCardPile* CardPileClass : GlobalCardPileClasses)
+	{
+		Model.AddGlobalCardPile(CardPileClass);
+	}
+
+	// Notify listeners.
 	ReceiveOnPreStartGame();
+}
+
+TArray<UCardGameCardPile*> ACardGameMode::GetCardPileClassesByScope(ECardGameScope Scope) const
+{
+	TArray<UCardGameCardPile*> CardPileClassesByScope;
+
+	for (UCardGameCardPile* CardPileClass : CardPileClasses)
+	{
+		if (CardPileClass->GetScope() == Scope)
+		{
+			CardPileClassesByScope.Add(CardPileClass);
+		}
+	}
+
+	return CardPileClassesByScope;
 }
 
 bool ACardGameMode::IsPlayerIndexInUse(int32 PlayerIndex) const
