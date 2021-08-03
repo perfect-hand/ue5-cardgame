@@ -7,6 +7,7 @@ void ACardGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACardGamePlayerState, PlayerIndex);
+	DOREPLIFETIME(ACardGamePlayerState, bReady);
 }
 
 void ACardGamePlayerState::CopyProperties(APlayerState* PlayerState)
@@ -21,6 +22,11 @@ void ACardGamePlayerState::CopyProperties(APlayerState* PlayerState)
 	}
 
 	CardGamePlayerState->SetPlayerIndex(PlayerIndex);
+	
+	if (bReady)
+	{
+		CardGamePlayerState->SetReady();
+	}
 }
 
 uint8 ACardGamePlayerState::GetPlayerIndex() const
@@ -31,4 +37,14 @@ uint8 ACardGamePlayerState::GetPlayerIndex() const
 void ACardGamePlayerState::SetPlayerIndex(uint8 InPlayerIndex)
 {
 	PlayerIndex = InPlayerIndex;
+}
+
+bool ACardGamePlayerState::IsReady() const
+{
+	return bReady;
+}
+
+void ACardGamePlayerState::SetReady()
+{
+	bReady = true;
 }

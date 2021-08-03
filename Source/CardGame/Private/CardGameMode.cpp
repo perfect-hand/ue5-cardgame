@@ -61,6 +61,39 @@ void ACardGameMode::MoveCardBetweenPlayerPiles(AController* Player, UCardGameCar
 	Model.MoveCardBetweenPlayerCardPiles(PlayerState->GetPlayerIndex(), From, To, CardIndex);
 }
 
+void ACardGameMode::SetPlayerReady(AController* Player)
+{
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
+
+	if (!IsValid(PlayerState) || PlayerState->IsReady())
+	{
+		return;
+	}
+
+	PlayerState->SetReady();
+
+	// Check if all players ready.
+	int32 ReadyPlayers = 0;
+
+	for (ACardGamePlayerState* P : Players)
+	{
+		if (IsValid(P) && P->IsReady())
+		{
+			++ReadyPlayers;
+		}
+	}
+
+	if (ReadyPlayers >= NumPlayers)
+	{
+		NotifyOnPreStartGame();
+	}
+}
+
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
                                      const FString& Options, const FString& Portal)
 {
@@ -100,6 +133,13 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 	}
 
 	return ErrorMessage;
+}
+
+void ACardGameMode::NotifyOnPreStartGame()
+{
+	UE_LOG(LogCardGame, Log, TEXT("All %d player(s) are ready."), NumPlayers);
+	
+	ReceiveOnPreStartGame();
 }
 
 bool ACardGameMode::IsPlayerIndexInUse(int32 PlayerIndex) const
