@@ -43,6 +43,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerReady(AController* Player);
 
+	UFUNCTION(BlueprintPure)
+	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue);
+	
 protected:
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
 		const FString& Options, const FString& Portal) override;

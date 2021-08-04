@@ -6,17 +6,22 @@
 #include "Templates/SubclassOf.h"
 
 #include "CardGameAbilityEffect.h"
-#include "CardGameAttribute.h"
 
 #include "CardGameScopedModel.generated.h"
+
+class UCardGameAttribute;
 
 USTRUCT()
 struct CARDGAME_API FCardGameScopedModel
 {
 	GENERATED_BODY()
 
+public:
+	float GetAttributeValue(UCardGameAttribute* Attribute) const;
+	void SetAttributeValue(UCardGameAttribute* Attribute, float NewValue);
+	
 private:
-	TMap<TSubclassOf<UCardGameAttribute>, float> Attributes;
+	TMap<UCardGameAttribute*, float> Attributes;
 	FGameplayTagContainer GameplayTags;
 	TArray<TSubclassOf<UCardGameAbilityEffect>> ActiveEffects;
 };

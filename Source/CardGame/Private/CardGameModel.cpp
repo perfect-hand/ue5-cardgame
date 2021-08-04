@@ -113,6 +113,18 @@ void FCardGameModel::MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGame
 	}
 }
 
+float FCardGameModel::GetGlobalAttributeValue(UCardGameAttribute* Attribute) const
+{
+	return GlobalModel.GetAttributeValue(Attribute);
+}
+
+void FCardGameModel::SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue)
+{
+	GlobalModel.SetAttributeValue(Attribute, NewValue);
+
+	UE_LOG(LogCardGame, Log, TEXT("Set global attribute %s value to %f."), *Attribute->GetName(), NewValue);
+}
+
 FCardGameCardPileModel* FCardGameModel::GetGlobalCardPile(UCardGameCardPile* CardPileClass)
 {
 	for (FCardGameCardPileModel& CardPile : GlobalCardPiles)

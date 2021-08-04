@@ -110,6 +110,16 @@ void ACardGameMode::SetPlayerReady(AController* Player)
 	}
 }
 
+float ACardGameMode::GetGlobalAttributeValue(UCardGameAttribute* Attribute) const
+{
+	return Model.GetGlobalAttributeValue(Attribute);
+}
+
+void ACardGameMode::SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue)
+{
+	Model.SetGlobalAttributeValue(Attribute, NewValue);
+}
+
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
                                      const FString& Options, const FString& Portal)
 {

@@ -27,6 +27,8 @@ public:
 	void ShufflePlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass);
 	void MoveCardBetweenGlobalCardPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex);
 	void MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex);
+	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
+	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue);
 	
 private:
 	FCardGameScopedModel GlobalModel;
