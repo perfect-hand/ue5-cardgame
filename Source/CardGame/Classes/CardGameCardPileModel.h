@@ -29,6 +29,7 @@ public:
 private:
 	UPROPERTY()
 	UCardGameCardPile* CardPileClass;
-	
+
+	UPROPERTY()
 	TArray<FCardGameCardModel> Cards;
 };

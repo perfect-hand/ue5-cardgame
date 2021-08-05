@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 
 #include "CardGameAbilityEffect.h"
+#include "CardGameAttributeWithValue.h"
 
 #include "CardGameScopedModel.generated.h"
 
@@ -21,7 +22,12 @@ public:
 	void SetAttributeValue(UCardGameAttribute* Attribute, float NewValue);
 	
 private:
-	TMap<UCardGameAttribute*, float> Attributes;
+	UPROPERTY()
+	TArray<FCardGameAttributeWithValue> Attributes;
+
+	UPROPERTY()
 	FGameplayTagContainer GameplayTags;
+
+	UPROPERTY()
 	TArray<TSubclassOf<UCardGameAbilityEffect>> ActiveEffects;
 };

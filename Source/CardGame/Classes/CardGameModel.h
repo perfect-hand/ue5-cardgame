@@ -31,9 +31,13 @@ public:
 	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue);
 	
 private:
+	UPROPERTY()
 	FCardGameScopedModel GlobalModel;
+
+	UPROPERTY()
 	TArray<FCardGameCardPileModel> GlobalCardPiles;
-	
+
+	UPROPERTY()
 	TArray<FCardGamePlayerModel> Players;
 
 	FCardGameCardInstanceIdPool CardInstanceIdPool;

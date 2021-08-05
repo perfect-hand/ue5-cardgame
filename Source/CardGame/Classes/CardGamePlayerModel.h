@@ -25,8 +25,13 @@ public:
 	void MoveCardBetweenPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 Index);
 	
 private:
+	UPROPERTY()
 	uint8 PlayerIndex;
+
+	UPROPERTY()
 	FCardGameScopedModel PlayerModel;
+
+	UPROPERTY()
 	TArray<FCardGameCardPileModel> PlayerCardPiles;
 
 	FCardGameCardPileModel* GetCardPile(UCardGameCardPile* CardPileClass);

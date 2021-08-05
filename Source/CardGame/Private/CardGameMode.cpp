@@ -2,6 +2,7 @@
 
 #include "CardGameCardPile.h"
 #include "CardGameLogCategory.h"
+#include "CardGamePlayerController.h"
 #include "CardGamePlayerState.h"
 
 ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
@@ -93,6 +94,8 @@ void ACardGameMode::SetPlayerReady(AController* Player)
 
 	PlayerState->SetReady();
 
+	UE_LOG(LogCardGame, Log, TEXT("%s is ready."), *PlayerState->GetName());
+	
 	// Check if all players ready.
 	int32 ReadyPlayers = 0;
 
@@ -106,7 +109,22 @@ void ACardGameMode::SetPlayerReady(AController* Player)
 
 	if (ReadyPlayers >= NumPlayers)
 	{
+		UE_LOG(LogCardGame, Log, TEXT("All %d player(s) are ready, starting game."), NumPlayers);
+		
 		NotifyOnPreStartGame();
+
+		// Start game.
+		for (ACardGamePlayerState* P : Players)
+		{
+			ACardGamePlayerController* PC = Cast<ACardGamePlayerController>(P->GetOwner());
+
+			if (!IsValid(PC))
+			{
+				continue;
+			}
+
+			PC->ClientGameStarted(Model);
+		}
 	}
 }
 
@@ -164,8 +182,6 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 
 void ACardGameMode::NotifyOnPreStartGame()
 {
-	UE_LOG(LogCardGame, Log, TEXT("All %d player(s) are ready."), NumPlayers);
-
 	// Add global card piles.
 	const TArray<UCardGameCardPile*> GlobalCardPileClasses = GetCardPileClassesByScope(ECardGameScope::Global);
 	

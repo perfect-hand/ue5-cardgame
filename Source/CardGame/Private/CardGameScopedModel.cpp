@@ -2,10 +2,30 @@
 
 float FCardGameScopedModel::GetAttributeValue(UCardGameAttribute* Attribute) const
 {
-	return Attributes.FindRef(Attribute);
+	for (const FCardGameAttributeWithValue& AttributeWithValue : Attributes)
+	{
+		if (AttributeWithValue.GetAttribute() == Attribute)
+		{
+			return AttributeWithValue.GetValue();
+		}
+	}
+
+	return 0.0f;
 }
 
 void FCardGameScopedModel::SetAttributeValue(UCardGameAttribute* Attribute, float NewValue)
 {
-	Attributes.Add(Attribute, NewValue);
+	for (FCardGameAttributeWithValue& AttributeWithValue : Attributes)
+	{
+		if (AttributeWithValue.GetAttribute() == Attribute)
+		{
+			AttributeWithValue.SetValue(NewValue);
+			return;
+		}
+	}
+
+	FCardGameAttributeWithValue NewAttributeWithValue;
+	NewAttributeWithValue.SetAttribute(Attribute);
+	NewAttributeWithValue.SetValue(NewValue);
+	Attributes.Add(NewAttributeWithValue);
 }

@@ -21,10 +21,12 @@ public:
 	UCardGameCard* GetCardClass() const;
 	
 private:
+	UPROPERTY()
 	int64 InstanceId;
 
 	UPROPERTY()
 	UCardGameCard* CardClass;
-	
+
+	UPROPERTY()
 	FCardGameScopedModel CardModel;
 };
