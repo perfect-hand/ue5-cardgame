@@ -8,7 +8,7 @@
 
 class UCardGameCard;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct CARDGAME_API FCardGameCardModel
 {
 	GENERATED_BODY()

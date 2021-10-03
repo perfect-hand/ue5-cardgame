@@ -11,6 +11,8 @@
 
 class UCardGameCardPile;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardGameModelCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
+
 USTRUCT()
 struct CARDGAME_API FCardGameModel
 {
@@ -29,6 +31,9 @@ public:
 	void MoveCardBetweenPlayerCardPiles(int32 PlayerIndex, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex);
 	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
 	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue);
+	const TArray<FCardGameCardPileModel>& GetGlobalCardPiles() const;
+	
+	FCardGameModelCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
 	
 private:
 	UPROPERTY()

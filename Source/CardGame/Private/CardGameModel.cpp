@@ -39,10 +39,13 @@ void FCardGameModel::AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, U
 	}
 	
 	int64 NewCardInstanceId = CardInstanceIdPool.NewId();
-	CardPile->AddCard(NewCardInstanceId, CardClass);
+	const FCardGameCardModel NewCard = CardPile->AddCard(NewCardInstanceId, CardClass);
 	
 	UE_LOG(LogCardGame, Log, TEXT("Added %s (%d) to global card pile %s."),
 		*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName());
+
+	// Notify listeners.
+	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, NewCard);
 }
 
 void FCardGameModel::AddCardToPlayerCardPile(int32 PlayerIndex, UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
@@ -123,6 +126,11 @@ void FCardGameModel::SetGlobalAttributeValue(UCardGameAttribute* Attribute, floa
 	GlobalModel.SetAttributeValue(Attribute, NewValue);
 
 	UE_LOG(LogCardGame, Log, TEXT("Set global attribute %s value to %f."), *Attribute->GetName(), NewValue);
+}
+
+const TArray<FCardGameCardPileModel>& FCardGameModel::GetGlobalCardPiles() const
+{
+	return GlobalCardPiles;
 }
 
 FCardGameCardPileModel* FCardGameModel::GetGlobalCardPile(UCardGameCardPile* CardPileClass)

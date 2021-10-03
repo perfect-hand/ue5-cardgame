@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "CardGameActorManager.h"
 #include "GameFramework/PlayerController.h"
 
 #include "CardGameModel.h"
@@ -16,6 +18,8 @@ class CARDGAME_API ACardGamePlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	ACardGamePlayerController(const FObjectInitializer& ObjectInitializer);
+	
 	UFUNCTION(BlueprintPure)
 	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
 	
@@ -28,6 +32,12 @@ public:
 	void ReceiveOnGameStarted();
 	
 private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UCardGameActorManager> ActorManagerClass;
+	
 	UPROPERTY()
 	FCardGameModel Model;
+
+	UPROPERTY()
+	UCardGameActorManager* ActorManager;
 };

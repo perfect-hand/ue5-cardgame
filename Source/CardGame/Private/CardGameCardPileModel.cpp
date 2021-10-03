@@ -15,10 +15,11 @@ void FCardGameCardPileModel::SetCardPileClass(UCardGameCardPile* InCardPileClass
 	CardPileClass = InCardPileClass;
 }
 
-void FCardGameCardPileModel::AddCard(int64 InstanceId, UCardGameCard* CardClass)
+FCardGameCardModel FCardGameCardPileModel::AddCard(int64 InstanceId, UCardGameCard* CardClass)
 {
 	const FCardGameCardModel NewCard(InstanceId, CardClass);
 	AddCard(NewCard);
+	return NewCard;
 }
 
 void FCardGameCardPileModel::AddCard(FCardGameCardModel Card)
@@ -48,4 +49,9 @@ void FCardGameCardPileModel::Shuffle(FRandomStream& RandomStream)
 	}
 
 	Cards = ShuffledCards;
+}
+
+const TArray<FCardGameCardModel>& FCardGameCardPileModel::GetCards() const
+{
+	return Cards;
 }
