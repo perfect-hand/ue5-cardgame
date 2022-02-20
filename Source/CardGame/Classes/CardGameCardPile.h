@@ -13,7 +13,7 @@ class CARDGAME_API UCardGameCardPile : public UDataAsset
 public:
 	ECardGameScope GetScope() const;
 	
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	ECardGameScope Scope;
 };
