@@ -18,10 +18,6 @@ struct CARDGAME_API FCardGameScopedModel
 	GENERATED_BODY()
 
 public:
-	float GetAttributeValue(UCardGameAttribute* Attribute) const;
-	void SetAttributeValue(UCardGameAttribute* Attribute, float NewValue);
-	
-private:
 	UPROPERTY()
 	TArray<FCardGameAttributeWithValue> Attributes;
 
