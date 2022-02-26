@@ -36,7 +36,7 @@ private:
 	TSubclassOf<UCardGameActorManager> ActorManagerClass;
 	
 	UPROPERTY()
-	FCardGameModel Model;
+	FCardGameModel ClientModel;
 
 	UPROPERTY()
 	UCardGameActorManager* ActorManager;

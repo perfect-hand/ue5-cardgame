@@ -1,12 +1,12 @@
-﻿#include "Systems/CardGameAttributeSystem.h"
+﻿#include "Services/CardGameAttributeService.h"
 
-#include "CardGameAttribute.h"
 #include "CardGameLogCategory.h"
+#include "Assets/CardGameAttribute.h"
 #include "Model/CardGameAttributeWithValue.h"
 #include "Model/CardGameModel.h"
 #include "Model/CardGameScopedModel.h"
 
-float FCardGameAttributeSystem::GetAttributeValue(const FCardGameScopedModel& ScopedModel,
+float FCardGameAttributeService::GetAttributeValue(const FCardGameScopedModel& ScopedModel,
                                                   UCardGameAttribute* Attribute) const
 {
 	for (const FCardGameAttributeWithValue& AttributeWithValue : ScopedModel.Attributes)
@@ -20,7 +20,7 @@ float FCardGameAttributeSystem::GetAttributeValue(const FCardGameScopedModel& Sc
 	return 0.0f;
 }
 
-void FCardGameAttributeSystem::SetAttributeValue(FCardGameScopedModel& ScopedModel, UCardGameAttribute* Attribute,
+void FCardGameAttributeService::SetAttributeValue(FCardGameScopedModel& ScopedModel, UCardGameAttribute* Attribute,
 	float NewValue) const
 {
 	for (FCardGameAttributeWithValue& AttributeWithValue : ScopedModel.Attributes)
@@ -38,13 +38,13 @@ void FCardGameAttributeSystem::SetAttributeValue(FCardGameScopedModel& ScopedMod
 	ScopedModel.Attributes.Add(NewAttributeWithValue);
 }
 
-float FCardGameAttributeSystem::GetGlobalAttributeValue(const FCardGameModel& Model,
+float FCardGameAttributeService::GetGlobalAttributeValue(const FCardGameModel& Model,
 	UCardGameAttribute* Attribute) const
 {
 	return GetAttributeValue(Model.GlobalModel, Attribute);
 }
 
-void FCardGameAttributeSystem::SetGlobalAttributeValue(FCardGameModel& Model, UCardGameAttribute* Attribute,
+void FCardGameAttributeService::SetGlobalAttributeValue(FCardGameModel& Model, UCardGameAttribute* Attribute,
 	float NewValue) const
 {
 	SetAttributeValue(Model.GlobalModel, Attribute, NewValue);

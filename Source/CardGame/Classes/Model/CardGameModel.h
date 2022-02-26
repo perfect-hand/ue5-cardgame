@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-#include "CardGameCardInstanceIdPool.h"
+#include "CardGameCardInstanceIdProvider.h"
 #include "CardGameCardPileModel.h"
 #include "CardGamePlayerModel.h"
 #include "CardGameScopedModel.h"
@@ -25,7 +25,4 @@ public:
 
 	UPROPERTY()
 	TArray<FCardGamePlayerModel> Players;
-
-	//FCardGameCardInstanceIdPool CardInstanceIdPool;
-	//FRandomStream RandomStream = FRandomStream(FName());
 };

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-#include "CardGameCardModel.h"
+#include "Model/CardGameCardModel.h"
 
 #include "CardGameActor.generated.h"
 

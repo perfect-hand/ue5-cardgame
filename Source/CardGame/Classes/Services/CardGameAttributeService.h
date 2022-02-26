@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 
-#include "CardGameAttributeSystem.generated.h"
+#include "CardGameAttributeService.generated.h"
 
 class UCardGameAttribute;
 struct FCardGameModel;
 struct FCardGameScopedModel;
 
-class CARDGAME_API FCardGameAttributeSystem
+class CARDGAME_API FCardGameAttributeService
 {
 public:
 	float GetAttributeValue(const FCardGameScopedModel& ScopedModel, UCardGameAttribute* Attribute) const;

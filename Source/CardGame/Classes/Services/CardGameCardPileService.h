@@ -4,21 +4,23 @@
 
 #include "Model/CardGameCardModel.h"
 
-#include "CardGameCardPileSystem.generated.h"
+#include "CardGameCardPileService.generated.h"
 
 class UCardGameCard;
-class FCardGameCardInstanceIdPool;
+class FCardGameCardInstanceIdProvider;
 class UCardGameCardPile;
 struct FCardGameCardPileModel;
 struct FCardGameModel;
 struct FCardGamePlayerModel;
+class FCardGameRandomNumberProvider;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
 
-class CARDGAME_API FCardGameCardPileSystem
+class CARDGAME_API FCardGameCardPileService
 {
 public:
-	explicit FCardGameCardPileSystem(FCardGameCardInstanceIdPool& CardInstanceIdPool, FRandomStream& RandomStream);
+	explicit FCardGameCardPileService(FCardGameCardInstanceIdProvider& CardInstanceIdProvider,
+		FCardGameRandomNumberProvider& RandomNumberProvider);
 	
 	void AddGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
 	void AddCardToGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass,
@@ -35,8 +37,8 @@ public:
 	FCardGameCardPileSystemCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
 
 private:
-	FCardGameCardInstanceIdPool& CardInstanceIdPool;
-	FRandomStream& RandomStream;
+	FCardGameCardInstanceIdProvider& CardInstanceIdProvider;
+	FCardGameRandomNumberProvider& RandomNumberProvider;
 	
 	FCardGameCardPileModel* GetGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
 	FCardGameCardPileModel* GetPlayerCardPile(FCardGamePlayerModel& Player, UCardGameCardPile* CardPileClass) const;

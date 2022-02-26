@@ -13,9 +13,4 @@ class CARDGAME_API UCardGameBlueprintFunctionLibrary : public UBlueprintFunction
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure)
-	static int64 GetCardInstanceId(const FCardGameCardModel& Card);
-
-	UFUNCTION(BlueprintPure)
-	static UCardGameCard* GetCardClass(const FCardGameCardModel& Card);
 };

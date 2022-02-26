@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 
-class CARDGAME_API FCardGameCardInstanceIdPool
+class CARDGAME_API FCardGameCardInstanceIdProvider
 {
 public:
-	FCardGameCardInstanceIdPool();
+	FCardGameCardInstanceIdProvider();
 	int64 NewId();
 	
 private:

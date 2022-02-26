@@ -1,11 +1,11 @@
-﻿#include "Systems/CardGamePlayerSystem.h"
+﻿#include "Services/CardGamePlayerService.h"
 
-#include "CardGameCardPile.h"
+#include "Assets/CardGameCardPile.h"
 #include "Model/CardGameCardPileModel.h"
 #include "Model/CardGameModel.h"
 #include "Model/CardGamePlayerModel.h"
 
-void FCardGamePlayerSystem::AddPlayer(FCardGameModel& Model, int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses) const
+void FCardGamePlayerService::AddPlayer(FCardGameModel& Model, int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses) const
 {
 	FCardGamePlayerModel NewPlayer;
 	NewPlayer.PlayerIndex = PlayerIndex;

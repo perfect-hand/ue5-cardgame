@@ -11,71 +11,9 @@ ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
 	PlayerStateClass = ACardGamePlayerState::StaticClass();
 }
 
-void ACardGameMode::AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
+FCardGameModel& ACardGameMode::GetModel()
 {
-	Model.AddCardToGlobalCardPile(CardPileClass, CardClass);
-}
-
-void ACardGameMode::AddCardToPlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass,
-	UCardGameCard* CardClass)
-{
-	if (!IsValid(Player))
-	{
-		return;
-	}
-
-	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
-
-	if (!IsValid(PlayerState))
-	{
-		return;
-	}
-
-	Model.AddCardToPlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass, CardClass);
-}
-
-void ACardGameMode::ShuffleGlobalCardPile(UCardGameCardPile* CardPileClass)
-{
-	Model.ShuffleGlobalCardPile(CardPileClass);
-}
-
-void ACardGameMode::ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass)
-{
-	if (!IsValid(Player))
-	{
-		return;
-	}
-
-	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
-
-	if (!IsValid(PlayerState))
-	{
-		return;
-	}
-
-	Model.ShufflePlayerCardPile(PlayerState->GetPlayerIndex(), CardPileClass);
-}
-
-void ACardGameMode::MoveCardBetweenGlobalPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
-{
-	Model.MoveCardBetweenGlobalCardPiles(From, To, CardIndex);
-}
-
-void ACardGameMode::MoveCardBetweenPlayerPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex)
-{
-	if (!IsValid(Player))
-	{
-		return;
-	}
-
-	ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
-
-	if (!IsValid(PlayerState))
-	{
-		return;
-	}
-
-	Model.MoveCardBetweenPlayerCardPiles(PlayerState->GetPlayerIndex(), From, To, CardIndex);
+	return Model;
 }
 
 void ACardGameMode::SetPlayerReady(AController* Player)
@@ -126,16 +64,6 @@ void ACardGameMode::SetPlayerReady(AController* Player)
 			PC->ClientGameStarted(Model);
 		}
 	}
-}
-
-float ACardGameMode::GetGlobalAttributeValue(UCardGameAttribute* Attribute) const
-{
-	return Model.GetGlobalAttributeValue(Attribute);
-}
-
-void ACardGameMode::SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue)
-{
-	Model.SetGlobalAttributeValue(Attribute, NewValue);
 }
 
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
