@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 
 #include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
 
 #include "CardGameActor.h"
-#include "CardGameModel.h"
-#include "Templates/SubclassOf.h"
+#include "Model/CardGameModel.h"
 
 #include "CardGameActorManager.generated.h"
 
