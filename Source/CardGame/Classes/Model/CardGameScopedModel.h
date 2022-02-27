@@ -5,8 +5,8 @@
 #include "GameplayTagContainer.h"
 #include "Templates/SubclassOf.h"
 
-#include "CardGameAbilityEffect.h"
-#include "CardGameAttributeWithValue.h"
+#include "Assets/CardGameAbilityEffect.h"
+#include "Model/CardGameAttributeWithValue.h"
 
 #include "CardGameScopedModel.generated.h"
 

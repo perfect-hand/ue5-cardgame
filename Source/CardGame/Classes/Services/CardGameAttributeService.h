@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 
-#include "CardGameAttributeService.generated.h"
-
 class UCardGameAttribute;
 struct FCardGameModel;
 struct FCardGameScopedModel;

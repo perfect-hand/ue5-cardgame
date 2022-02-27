@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 
-#include "CardGamePlayerService.generated.h"
-
 class UCardGameConfiguration;
 struct FCardGameModel;
 

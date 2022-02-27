@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "CardGameScope.h"
 #include "CardGameCardPile.generated.h"
 
 UCLASS()

@@ -17,6 +17,19 @@ void UCardGameCardPileSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	CardPileService = MakeUnique<FCardGameCardPileService>(
 		CardInstanceIdPoolSubsystem->GetCardInstanceIdProvider().Get(),
 		RandomStreamSubsystem->GetRandomNumberProvider().Get());
+
+	OnCardAddedToGlobalCardPileHandle = CardPileService->OnCardAddedToGlobalCardPile.AddUObject
+		(this, &UCardGameCardPileSubsystem::NotifyOnCardAddedToGlobalCardPile);
+}
+
+void UCardGameCardPileSubsystem::Deinitialize()
+{
+	Super::Deinitialize();
+
+	if (CardPileService.IsValid())
+	{
+		CardPileService->OnCardAddedToGlobalCardPile.Remove(OnCardAddedToGlobalCardPileHandle);
+	}
 }
 
 void UCardGameCardPileSubsystem::AddGlobalCardPiles(UCardGameConfiguration* Configuration)
@@ -91,4 +104,10 @@ void UCardGameCardPileSubsystem::MoveCardBetweenPlayerCardPiles(AController* Pla
 	}
 
 	CardPileService->MoveCardBetweenPlayerCardPiles(GetModel(), PlayerState->GetPlayerIndex(), From, To, CardIndex);
+}
+
+void UCardGameCardPileSubsystem::NotifyOnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass,
+	FCardGameCardModel Card)
+{
+	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, Card);
 }

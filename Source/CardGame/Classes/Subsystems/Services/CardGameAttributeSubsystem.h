@@ -2,10 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/CardGameSubsystem.h"
+
+#include "Services/CardGameAttributeService.h"
+
 #include "CardGameAttributeSubsystem.generated.h"
 
 class UCardGameAttribute;
-class FCardGameAttributeService;
 
 UCLASS()
 class CARDGAME_API UCardGameAttributeSubsystem : public UCardGameSubsystem

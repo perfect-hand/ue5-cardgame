@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Model/CardGameCardModel.h"
-#include "CardGameCardPileService.generated.h"
 
 class UCardGameCard;
 class FCardGameCardInstanceIdProvider;
@@ -13,7 +12,7 @@ struct FCardGameModel;
 struct FCardGamePlayerModel;
 class FCardGameRandomNumberProvider;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile* /* CardPileClass */, FCardGameCardModel /* Card */);
 
 class CARDGAME_API FCardGameCardPileService
 {
