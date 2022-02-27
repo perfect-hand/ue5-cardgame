@@ -3,6 +3,7 @@
 #include "CardGameLogCategory.h"
 #include "Assets/CardGameCard.h"
 #include "Assets/CardGameCardPile.h"
+#include "Assets/CardGameConfiguration.h"
 #include "Model/CardGameCardPileModel.h"
 #include "Model/CardGameModel.h"
 #include "Providers/CardGameCardInstanceIdProvider.h"
@@ -15,11 +16,14 @@ FCardGameCardPileService::FCardGameCardPileService(FCardGameCardInstanceIdProvid
 {
 }
 
-void FCardGameCardPileService::AddGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const
+void FCardGameCardPileService::AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const
 {
-	FCardGameCardPileModel NewCardPile;
-	NewCardPile.CardPileClass = CardPileClass;
-	Model.GlobalCardPiles.Add(NewCardPile);
+	for (UCardGameCardPile* CardPileClass : Configuration->GetGlobalCardPileClasses())
+	{
+		FCardGameCardPileModel NewCardPile;
+		NewCardPile.CardPileClass = CardPileClass;
+		Model.GlobalCardPiles.Add(NewCardPile);
+	}
 }
 
 void FCardGameCardPileService::AddCardToGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass,

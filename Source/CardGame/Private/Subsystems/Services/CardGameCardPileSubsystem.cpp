@@ -19,6 +19,11 @@ void UCardGameCardPileSubsystem::Initialize(FSubsystemCollectionBase& Collection
 		RandomStreamSubsystem->GetRandomNumberProvider().Get());
 }
 
+void UCardGameCardPileSubsystem::AddGlobalCardPiles(UCardGameConfiguration* Configuration)
+{
+	CardPileService->AddGlobalCardPiles(GetModel(), Configuration);
+}
+
 void UCardGameCardPileSubsystem::AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass)
 {
 	CardPileService->AddCardToGlobalCardPile(GetModel(), CardPileClass, CardClass);

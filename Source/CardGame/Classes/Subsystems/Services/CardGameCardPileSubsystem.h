@@ -7,6 +7,7 @@
 class UCardGameCard;
 class UCardGameCardPile;
 class FCardGameCardPileService;
+class UCardGameConfiguration;
 
 UCLASS()
 class CARDGAME_API UCardGameCardPileSubsystem : public UCardGameSubsystem
@@ -18,6 +19,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	// End USubsystem
 
+	void AddGlobalCardPiles(UCardGameConfiguration* Configuration);
+	
 	UFUNCTION(BlueprintCallable)
 	void AddCardToGlobalCardPile(UCardGameCardPile* CardPileClass, UCardGameCard* CardClass);
 

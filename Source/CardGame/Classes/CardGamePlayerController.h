@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 
-#include "CardGameActorManager.h"
 #include "GameFramework/PlayerController.h"
 
-#include "CardGameModel.h"
+#include "CardGameActorManager.h"
+#include "Model/CardGameModel.h"
 
 #include "CardGamePlayerController.generated.h"
 
@@ -19,9 +19,6 @@ class CARDGAME_API ACardGamePlayerController : public APlayerController
 
 public:
 	ACardGamePlayerController(const FObjectInitializer& ObjectInitializer);
-	
-	UFUNCTION(BlueprintPure)
-	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
 	
 	UFUNCTION(Reliable, Client)
 	void ClientGameStarted(const FCardGameModel& InModel);

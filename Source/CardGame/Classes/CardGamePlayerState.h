@@ -16,14 +16,8 @@ public:
 	
 	uint8 GetPlayerIndex() const;
 	void SetPlayerIndex(uint8 InPlayerIndex);
-
-	bool IsReady() const;
-	void SetReady();
 	
 private:
 	UPROPERTY(Replicated)
 	uint8 PlayerIndex;
-
-	UPROPERTY(Replicated)
-	bool bReady;
 };

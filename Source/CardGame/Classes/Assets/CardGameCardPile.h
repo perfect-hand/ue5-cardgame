@@ -9,11 +9,4 @@ UCLASS()
 class CARDGAME_API UCardGameCardPile : public UDataAsset
 {
 	GENERATED_BODY()
-
-public:
-	ECardGameScope GetScope() const;
-	
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	ECardGameScope Scope;
 };

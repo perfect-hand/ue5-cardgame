@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Assets/CardGameConfiguration.h"
 #include "GameFramework/GameModeBase.h"
 
 #include "Model/CardGameModel.h"
@@ -25,30 +26,19 @@ public:
 	FCardGameModel& GetModel();
 
 	UFUNCTION(BlueprintCallable)
-	void SetPlayerReady(AController* Player);
+	void StartGame();
 
 protected:
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
 		const FString& Options, const FString& Portal) override;
 
-	virtual void NotifyOnPreStartGame();
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void ReceiveOnPreStartGame();
-	
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TArray<UCardGameCardPile*> CardPileClasses;
-	
-	UPROPERTY(EditDefaultsOnly)
-	int32 NumPlayers;
+	UCardGameConfiguration* Configuration;
 	
 	UPROPERTY()
 	FCardGameModel Model;
 	
 	UPROPERTY()
 	TArray<ACardGamePlayerState*> Players;
-
-	TArray<UCardGameCardPile*> GetCardPileClassesByScope(ECardGameScope Scope) const;
-	bool IsPlayerIndexInUse(int32 PlayerIndex) const;
 };

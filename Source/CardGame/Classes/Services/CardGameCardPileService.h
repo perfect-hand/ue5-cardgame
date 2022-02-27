@@ -1,15 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-
 #include "Model/CardGameCardModel.h"
-
 #include "CardGameCardPileService.generated.h"
 
 class UCardGameCard;
 class FCardGameCardInstanceIdProvider;
 class UCardGameCardPile;
 struct FCardGameCardPileModel;
+class UCardGameConfiguration;
 struct FCardGameModel;
 struct FCardGamePlayerModel;
 class FCardGameRandomNumberProvider;
@@ -22,7 +21,7 @@ public:
 	explicit FCardGameCardPileService(FCardGameCardInstanceIdProvider& CardInstanceIdProvider,
 		FCardGameRandomNumberProvider& RandomNumberProvider);
 	
-	void AddGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
+	void AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const;
 	void AddCardToGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass,
 		UCardGameCard* CardClass) const;
 	void AddCardToPlayerCardPile(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* CardPileClass,

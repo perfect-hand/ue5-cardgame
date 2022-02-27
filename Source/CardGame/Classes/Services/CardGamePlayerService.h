@@ -4,16 +4,15 @@
 
 #include "CardGamePlayerService.generated.h"
 
-class UCardGameCard;
-class FCardGameCardInstanceIdProvider;
-class UCardGameCardPile;
-struct FCardGameCardPileModel;
-class FCardGameCardPileSystem;
+class UCardGameConfiguration;
 struct FCardGameModel;
-struct FCardGamePlayerModel;
 
 class CARDGAME_API FCardGamePlayerService
 {
 public:
-	void AddPlayer(FCardGameModel& Model, int32 PlayerIndex, TArray<UCardGameCardPile*> CardPileClasses) const;
+	int32 AddPlayer(FCardGameModel& Model, const UCardGameConfiguration* Configuration) const;
+
+private:
+	int32 GetAvailablePlayerIndex(const FCardGameModel& Model) const;
+	bool IsPlayerIndexInUse(const FCardGameModel& Model, int32 PlayerIndex) const;
 };
