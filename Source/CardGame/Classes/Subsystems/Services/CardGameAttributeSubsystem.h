@@ -24,6 +24,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, int32 NewValue);
+
+	UFUNCTION(BlueprintPure)
+	int32 GetPlayerAttributeValue(AController* Player, UCardGameAttribute* Attribute) const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerAttributeValue(AController* Player, UCardGameAttribute* Attribute, int32 NewValue);
 	
 private:
 	TUniquePtr<FCardGameAttributeService> AttributeService;
