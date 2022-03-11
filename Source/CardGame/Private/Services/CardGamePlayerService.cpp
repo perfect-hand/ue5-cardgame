@@ -11,11 +11,14 @@ int32 FCardGamePlayerService::AddPlayer(FCardGameModel& Model, const UCardGameCo
 	FCardGamePlayerModel NewPlayer;
 	NewPlayer.PlayerIndex = GetAvailablePlayerIndex(Model);
 
-	for (UCardGameCardPile* CardPileClass : Configuration->GetPlayerCardPileClasses())
+	if (IsValid(Configuration))
 	{
-		FCardGameCardPileModel NewCardPile;
-		NewCardPile.CardPileClass = CardPileClass;
-		NewPlayer.PlayerCardPiles.Add(NewCardPile);
+		for (UCardGameCardPile* CardPileClass : Configuration->GetPlayerCardPileClasses())
+		{
+			FCardGameCardPileModel NewCardPile;
+			NewCardPile.CardPileClass = CardPileClass;
+			NewPlayer.PlayerCardPiles.Add(NewCardPile);
+		}
 	}
 
 	Model.Players.Add(NewPlayer);
