@@ -33,6 +33,7 @@ Note: This document is work-in-progress and subject to change.
 ## Design Decisions
 
 * Provider subsystems are used for injecting dependencies for service subsystems. These dependencies need to be available before the game mode might have been initialized.
+* RPCs for efficiency, events and secrets
 
 ## Open Questions
 
