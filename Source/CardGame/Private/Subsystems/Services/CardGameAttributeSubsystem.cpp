@@ -9,12 +9,12 @@ void UCardGameAttributeSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 	AttributeService = MakeUnique<FCardGameAttributeService>();
 }
 
-float UCardGameAttributeSubsystem::GetGlobalAttributeValue(UCardGameAttribute* Attribute) const
+int32 UCardGameAttributeSubsystem::GetGlobalAttributeValue(UCardGameAttribute* Attribute) const
 {
 	return AttributeService->GetGlobalAttributeValue(GetModel(), Attribute);
 }
 
-void UCardGameAttributeSubsystem::SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue)
+void UCardGameAttributeSubsystem::SetGlobalAttributeValue(UCardGameAttribute* Attribute, int32 NewValue)
 {
 	AttributeService->SetGlobalAttributeValue(GetModel(), Attribute, NewValue);
 }

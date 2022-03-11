@@ -39,7 +39,7 @@ private:
 	int32 CardSetIndex;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TMap<TSubclassOf<UCardGameAttribute>, float> InitialAttributes;
+	TMap<TSubclassOf<UCardGameAttribute>, int32> InitialAttributes;
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer InitialGameplayTags;

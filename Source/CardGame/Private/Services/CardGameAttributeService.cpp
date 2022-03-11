@@ -6,7 +6,7 @@
 #include "Model/CardGameModel.h"
 #include "Model/CardGameScopedModel.h"
 
-float FCardGameAttributeService::GetAttributeValue(const FCardGameScopedModel& ScopedModel,
+int32 FCardGameAttributeService::GetAttributeValue(const FCardGameScopedModel& ScopedModel,
                                                   UCardGameAttribute* Attribute) const
 {
 	for (const FCardGameAttributeWithValue& AttributeWithValue : ScopedModel.Attributes)
@@ -21,7 +21,7 @@ float FCardGameAttributeService::GetAttributeValue(const FCardGameScopedModel& S
 }
 
 void FCardGameAttributeService::SetAttributeValue(FCardGameScopedModel& ScopedModel, UCardGameAttribute* Attribute,
-	float NewValue) const
+	int32 NewValue) const
 {
 	for (FCardGameAttributeWithValue& AttributeWithValue : ScopedModel.Attributes)
 	{
@@ -38,16 +38,16 @@ void FCardGameAttributeService::SetAttributeValue(FCardGameScopedModel& ScopedMo
 	ScopedModel.Attributes.Add(NewAttributeWithValue);
 }
 
-float FCardGameAttributeService::GetGlobalAttributeValue(const FCardGameModel& Model,
+int32 FCardGameAttributeService::GetGlobalAttributeValue(const FCardGameModel& Model,
 	UCardGameAttribute* Attribute) const
 {
 	return GetAttributeValue(Model.GlobalModel, Attribute);
 }
 
 void FCardGameAttributeService::SetGlobalAttributeValue(FCardGameModel& Model, UCardGameAttribute* Attribute,
-	float NewValue) const
+	int32 NewValue) const
 {
 	SetAttributeValue(Model.GlobalModel, Attribute, NewValue);
 
-	UE_LOG(LogCardGame, Log, TEXT("Set global attribute %s value to %f."), *Attribute->GetName(), NewValue);
+	UE_LOG(LogCardGame, Log, TEXT("Set global attribute %s value to %d."), *Attribute->GetName(), NewValue);
 }

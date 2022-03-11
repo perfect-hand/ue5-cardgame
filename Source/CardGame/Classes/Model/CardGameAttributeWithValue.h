@@ -16,5 +16,5 @@ public:
 	UCardGameAttribute* Attribute = nullptr;
 
 	UPROPERTY()
-	float Value = 0.0f;
+	int32 Value = 0;
 };

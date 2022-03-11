@@ -20,10 +20,10 @@ public:
 	// End USubsystem
 
 	UFUNCTION(BlueprintPure)
-	float GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
+	int32 GetGlobalAttributeValue(UCardGameAttribute* Attribute) const;
 
 	UFUNCTION(BlueprintCallable)
-	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, float NewValue);
+	void SetGlobalAttributeValue(UCardGameAttribute* Attribute, int32 NewValue);
 	
 private:
 	TUniquePtr<FCardGameAttributeService> AttributeService;
