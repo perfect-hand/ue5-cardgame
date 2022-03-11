@@ -15,12 +15,24 @@ Note: This document is work-in-progress and subject to change.
 * Diagnostics
 * Documentation
 
-## Setup
+## Plugin Setup
 
 1. Close your Unreal Editor.
 1. Download the latest release.
 1. Copy the CardGame folder to the Plugins folder next to your .uproject file (create if necessary).
 1. Start the Unreal Editor.
+
+## Usage
+
+### Data
+1. Add data assets of class CardGameCard.
+1. Add data assets of class CardGameCardPile.
+1. Add a data asset of class CardGameConfiguration.
+1. Add a (blueprint) class with parent class CardGameMode and set Configuration.
+
+### Game Setup
+
+1. Using the Card Pile Subsystem, add cards to player piles, shuffle them and/or move cards betweem them.
 
 ## Structure
 
