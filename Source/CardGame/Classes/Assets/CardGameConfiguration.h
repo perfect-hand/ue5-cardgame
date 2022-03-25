@@ -14,6 +14,8 @@ class CARDGAME_API UCardGameConfiguration : public UDataAsset
 public:
 	TArray<UCardGameCardPile*> GetGlobalCardPileClasses() const;
 	TArray<UCardGameCardPile*> GetPlayerCardPileClasses() const;
+	void SetGlobalCardPileClasses(TArray<UCardGameCardPile*> InGlobalCardPileClasses);
+	void SetPlayerCardPileClasses(TArray<UCardGameCardPile*> InPlayerCardPileClasses);
 	
 private:
 	UPROPERTY(EditDefaultsOnly)

@@ -10,11 +10,9 @@ bool FGetGlobalAttributeValueTest::RunTest(const FString& Parameters)
 {
 	// ARRANGE
 	FCardGameModel Model;
-	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
 	
-	FCardGameAttributeWithValue AttributeWithValue;
-	AttributeWithValue.Attribute = Attribute;
-	AttributeWithValue.Value = 2;
+	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
+	const FCardGameAttributeWithValue AttributeWithValue(Attribute, 2);
 
 	Model.GlobalModel.Attributes.Add(AttributeWithValue);
 
@@ -53,11 +51,9 @@ bool FSetGlobalAttributeValueChangesExistingValueTest::RunTest(const FString& Pa
 {
 	// ARRANGE
 	FCardGameModel Model;
-	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
 	
-	FCardGameAttributeWithValue AttributeWithValue;
-	AttributeWithValue.Attribute = Attribute;
-	AttributeWithValue.Value = 2;
+	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
+	const FCardGameAttributeWithValue AttributeWithValue(Attribute, 2);
 
 	Model.GlobalModel.Attributes.Add(AttributeWithValue);
 	
@@ -78,11 +74,9 @@ bool FGetPlayerAttributeValueTest::RunTest(const FString& Parameters)
 {
 	// ARRANGE
 	FCardGameModel Model;
+
 	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
-	
-	FCardGameAttributeWithValue AttributeWithValue;
-	AttributeWithValue.Attribute = Attribute;
-	AttributeWithValue.Value = 2;
+	const FCardGameAttributeWithValue AttributeWithValue(Attribute, 2);
 
 	FCardGamePlayerModel Player;
 	Player.PlayerIndex = 3;
@@ -129,11 +123,9 @@ bool FSetPlayerAttributeValueChangesExistingValueTest::RunTest(const FString& Pa
 {
 	// ARRANGE
 	FCardGameModel Model;
-	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
 	
-	FCardGameAttributeWithValue AttributeWithValue;
-	AttributeWithValue.Attribute = Attribute;
-	AttributeWithValue.Value = 2;
+	UCardGameAttribute* Attribute = NewObject<UCardGameAttribute>();
+	const FCardGameAttributeWithValue AttributeWithValue(Attribute, 2);
 
 	FCardGamePlayerModel Player;
 	Player.PlayerIndex = 3;

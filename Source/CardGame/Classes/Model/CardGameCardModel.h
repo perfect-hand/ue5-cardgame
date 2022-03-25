@@ -14,11 +14,21 @@ struct CARDGAME_API FCardGameCardModel
 	GENERATED_BODY()
 
 public:
+	FCardGameCardModel()
+	{
+	}
+	
+	FCardGameCardModel(int64 InInstanceId, UCardGameCard* InCardClass)
+	{
+		InstanceId = InInstanceId;
+		CardClass = InCardClass;
+	}
+	
 	UPROPERTY()
-	int64 InstanceId;
+	int64 InstanceId = 0;
 
 	UPROPERTY()
-	UCardGameCard* CardClass;
+	UCardGameCard* CardClass = nullptr;
 
 	UPROPERTY()
 	FCardGameScopedModel CardModel;

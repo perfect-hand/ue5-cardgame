@@ -12,6 +12,16 @@ struct CARDGAME_API FCardGameAttributeWithValue
 	GENERATED_BODY()
 
 public:
+	FCardGameAttributeWithValue()
+	{
+	}
+	
+	FCardGameAttributeWithValue(UCardGameAttribute* InAttribute, int32 InValue)
+	{
+		Attribute = InAttribute;
+		Value = InValue;
+	}
+	
 	UPROPERTY()
 	UCardGameAttribute* Attribute = nullptr;
 
