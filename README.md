@@ -13,6 +13,7 @@ Note: This document is work-in-progress and subject to change.
 * Savegames
 * Auto AI
 * Diagnostics
+* Simplicity
 * Documentation
 
 ## Plugin Setup
@@ -45,11 +46,20 @@ Note: This document is work-in-progress and subject to change.
 * Services: Core game logic classes. Stateless.
 * Subsystems: Unreal blueprint access to services. Trivial delegate pattern.
 
+Layers similar to traditional model/view/controller or endpoint/service/DAO: 
+
+* PlayerController (components) = (replication) endpoints
+* services = services
+* providers = DAO
+
 ## Design Decisions
 
 * Provider subsystems are used for injecting dependencies for service subsystems. These dependencies need to be available before the game mode might have been initialized.
 * RPCs for efficiency, events and secrets
+* Relations expressed by indices, not pointers, to allow for copying.
+* Player actions are just abilities. This allows Auto AI to automatically apply them.
 
-## Open Questions
+## Commit Checklist
 
-* Where should the model live? In the game mode?
+* Add unit tests.
+* Add detailed documentation.
