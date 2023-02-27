@@ -31,12 +31,16 @@ Note: This document is work-in-progress and subject to change.
 1. Add data assets of class CardGameCardPile.
 1. Add data assets of class CardGameAttribute.
 1. Add a data asset of class CardGameConfiguration.
-1. Add a (blueprint) class with parent class CardGameMode and set Configuration.
+1. Add a (blueprint) class with parent class CardGameActor and implement Init.
+1. Add a (blueprint) class with parent class CardGameActorManager and set Card Actor Class.
+1. Add a (blueprint) class with parent class CardGamePlayerController and set Actor Manager Class.
+1. Add a (blueprint) class with parent class CardGameMode and set Configuration and Player Controller Class.
 
 ### Game Setup
 
 1. Using the Card Pile Subsystem, add cards to player piles, shuffle them and/or move cards betweem them.
 1. Using the Attribute Subsystem, set global and player attribute values.
+1. In your card game mode, call Start Game.
 
 ## Structure
 

@@ -29,4 +29,9 @@ private:
 	
 	UFUNCTION()
 	void OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
+
+	UFUNCTION()
+	void OnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
+
+	void SpawnCardActor(UCardGameCardPile* CardPileClass, FCardGameCardModel Card, TOptional<uint8> PlayerIndex);
 };

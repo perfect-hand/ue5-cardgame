@@ -27,7 +27,7 @@ public:
 	UPROPERTY()
 	int64 InstanceId = 0;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UCardGameCard* CardClass = nullptr;
 
 	UPROPERTY()

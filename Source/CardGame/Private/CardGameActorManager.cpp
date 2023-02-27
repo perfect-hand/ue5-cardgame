@@ -9,7 +9,9 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 {
 	GetWorld()->GetSubsystem<UCardGameCardPileSubsystem>()->OnCardAddedToGlobalCardPile.AddDynamic
 		(this, &UCardGameActorManager::OnCardAddedToGlobalCardPile);
-
+	GetWorld()->GetSubsystem<UCardGameCardPileSubsystem>()->OnCardAddedToPlayerCardPile.AddDynamic
+		(this, &UCardGameActorManager::OnCardAddedToPlayerCardPile);
+	
 	// Raise initial events.
 	for (const FCardGameCardPileModel& CardPile : Model.GlobalCardPiles)
 	{
@@ -18,9 +20,32 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 			OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Card);
 		}
 	}
+
+	for (const FCardGamePlayerModel& Player : Model.Players)
+	{
+		for (const FCardGameCardPileModel& CardPile : Player.PlayerCardPiles)
+		{
+			for (const FCardGameCardModel& Card : CardPile.Cards)
+			{
+				OnCardAddedToPlayerCardPile(Player.PlayerIndex, CardPile.CardPileClass, Card);
+			}
+		}
+	}
 }
 
 void UCardGameActorManager::OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, FCardGameCardModel Card)
+{
+	SpawnCardActor(CardPileClass, Card, TOptional<uint8>());
+}
+
+void UCardGameActorManager::OnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass,
+	FCardGameCardModel Card)
+{
+	SpawnCardActor(CardPileClass, Card, PlayerIndex);
+}
+
+void UCardGameActorManager::SpawnCardActor(UCardGameCardPile* CardPileClass, FCardGameCardModel Card,
+	TOptional<uint8> PlayerIndex)
 {
 	ACardGameActor* CardActor = GetWorld()->SpawnActor<ACardGameActor>(CardActorClass);
 
@@ -36,5 +61,5 @@ void UCardGameActorManager::OnCardAddedToGlobalCardPile(UCardGameCardPile* CardP
 	UE_LOG(LogCardGame, Log, TEXT("Spawned actor %s for card %s (%d)."), *CardActor->GetName(),
 		*Card.CardClass->GetName(), Card.InstanceId);
 
-	CardActor->Init(Card);
+	CardActor->Init(Card, CardPileClass, PlayerIndex);
 }

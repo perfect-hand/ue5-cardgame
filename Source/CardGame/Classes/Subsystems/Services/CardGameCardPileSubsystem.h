@@ -13,6 +13,7 @@ class UCardGameCardPile;
 class UCardGameConfiguration;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSubsystemCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSubsystemCardAddedToPlayerCardPileSignature, uint8, PlayerIndex, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
 
 UCLASS()
 class CARDGAME_API UCardGameCardPileSubsystem : public UCardGameSubsystem
@@ -46,12 +47,17 @@ public:
 	void MoveCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
 	
 	FCardGameCardPileSubsystemCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
+	FCardGameCardPileSubsystemCardAddedToPlayerCardPileSignature OnCardAddedToPlayerCardPile;
 	
 private:
 	TUniquePtr<FCardGameCardPileService> CardPileService;
 
 	FDelegateHandle OnCardAddedToGlobalCardPileHandle;
+	FDelegateHandle OnCardAddedToPlayerCardPileHandle;
 	
 	UFUNCTION()
 	void NotifyOnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
+
+	UFUNCTION()
+	void NotifyOnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
 };

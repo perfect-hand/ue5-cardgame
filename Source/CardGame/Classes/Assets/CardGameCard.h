@@ -19,6 +19,10 @@ class CARDGAME_API UCardGameCard : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintPure)
+	FText GetCardName() const;
+	
 private:
 	UPROPERTY(EditDefaultsOnly)
 	FText CardName;

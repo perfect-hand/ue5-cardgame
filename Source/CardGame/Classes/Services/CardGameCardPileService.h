@@ -13,6 +13,7 @@ struct FCardGamePlayerModel;
 class FCardGameRandomNumberProvider;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile* /* CardPileClass */, FCardGameCardModel /* Card */);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSystemCardAddedToPlayerCardPileSignature, uint8 /* PlayerIndex */, UCardGameCardPile* /* CardPileClass */, FCardGameCardModel /* Card */);
 
 class CARDGAME_API FCardGameCardPileService
 {
@@ -23,7 +24,7 @@ public:
 	void AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const;
 	void AddCardToGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass,
 		UCardGameCard* CardClass) const;
-	void AddCardToPlayerCardPile(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* CardPileClass,
+	void AddCardToPlayerCardPile(FCardGameModel& Model, uint8 PlayerIndex, UCardGameCardPile* CardPileClass,
 		UCardGameCard* CardClass) const;
 	void ShuffleGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
 	void ShufflePlayerCardPile(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* CardPileClass) const;
@@ -33,7 +34,8 @@ public:
 		UCardGameCardPile* To, int32 CardIndex) const;
 
 	FCardGameCardPileSystemCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
-
+	FCardGameCardPileSystemCardAddedToPlayerCardPileSignature OnCardAddedToPlayerCardPile;
+	
 private:
 	FCardGameCardInstanceIdProvider& CardInstanceIdProvider;
 	FCardGameRandomNumberProvider& RandomNumberProvider;

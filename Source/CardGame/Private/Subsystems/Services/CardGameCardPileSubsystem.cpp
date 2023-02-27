@@ -20,6 +20,8 @@ void UCardGameCardPileSubsystem::Initialize(FSubsystemCollectionBase& Collection
 
 	OnCardAddedToGlobalCardPileHandle = CardPileService->OnCardAddedToGlobalCardPile.AddUObject
 		(this, &UCardGameCardPileSubsystem::NotifyOnCardAddedToGlobalCardPile);
+	OnCardAddedToPlayerCardPileHandle = CardPileService->OnCardAddedToPlayerCardPile.AddUObject
+		(this, &UCardGameCardPileSubsystem::NotifyOnCardAddedToPlayerCardPile);
 }
 
 void UCardGameCardPileSubsystem::Deinitialize()
@@ -110,4 +112,10 @@ void UCardGameCardPileSubsystem::NotifyOnCardAddedToGlobalCardPile(UCardGameCard
 	FCardGameCardModel Card)
 {
 	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, Card);
+}
+
+void UCardGameCardPileSubsystem::NotifyOnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass,
+	FCardGameCardModel Card)
+{
+	OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, Card);
 }

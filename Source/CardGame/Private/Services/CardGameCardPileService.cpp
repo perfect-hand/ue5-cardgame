@@ -46,7 +46,7 @@ void FCardGameCardPileService::AddCardToGlobalCardPile(FCardGameModel& Model, UC
 	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, NewCard);
 }
 
-void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, int32 PlayerIndex,
+void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, uint8 PlayerIndex,
 	UCardGameCardPile* CardPileClass, UCardGameCard* CardClass) const
 {
 	for (FCardGamePlayerModel& Player : Model.Players)
@@ -64,10 +64,13 @@ void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, in
 		}
 
 		const int64 NewCardInstanceId = CardInstanceIdProvider.NewId();
-		AddCard(*CardPile, NewCardInstanceId, CardClass);
+		const FCardGameCardModel NewCard = AddCard(*CardPile, NewCardInstanceId, CardClass);
 	
 		UE_LOG(LogCardGame, Log, TEXT("Added %s (%d) to %s of player %d."),
 			*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName(), Player.PlayerIndex);
+
+		// Notify listeners.
+		OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, NewCard);
 		return;
 	}
 }
