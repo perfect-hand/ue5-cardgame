@@ -12,8 +12,8 @@ struct FCardGameModel;
 struct FCardGamePlayerModel;
 class FCardGameRandomNumberProvider;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile* /* CardPileClass */, FCardGameCardModel /* Card */);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSystemCardAddedToPlayerCardPileSignature, uint8 /* PlayerIndex */, UCardGameCardPile* /* CardPileClass */, FCardGameCardModel /* Card */);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSystemCardAddedToGlobalCardPileSignature, UCardGameCardPile* /* CardPileClass */, int32 /* PositionInCardPile */, FCardGameCardModel /* Card */);
+DECLARE_MULTICAST_DELEGATE_FourParams(FCardGameCardPileSystemCardAddedToPlayerCardPileSignature, uint8 /* PlayerIndex */, UCardGameCardPile* /* CardPileClass */, int32 /* PositionInCardPile */, FCardGameCardModel /* Card */);
 
 class CARDGAME_API FCardGameCardPileService
 {

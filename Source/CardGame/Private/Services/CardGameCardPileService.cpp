@@ -43,7 +43,7 @@ void FCardGameCardPileService::AddCardToGlobalCardPile(FCardGameModel& Model, UC
 		*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName());
 
 	// Notify listeners.
-	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, NewCard);
+	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, CardPile->Cards.Num(), NewCard);
 }
 
 void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, uint8 PlayerIndex,
@@ -70,7 +70,7 @@ void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, ui
 			*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName(), Player.PlayerIndex);
 
 		// Notify listeners.
-		OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, NewCard);
+		OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, CardPile->Cards.Num(), NewCard);
 		return;
 	}
 }

@@ -12,8 +12,8 @@ class UCardGameCard;
 class UCardGameCardPile;
 class UCardGameConfiguration;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardGameCardPileSubsystemCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSubsystemCardAddedToPlayerCardPileSignature, uint8, PlayerIndex, UCardGameCardPile*, CardPileClass, FCardGameCardModel, Card);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCardGameCardPileSubsystemCardAddedToGlobalCardPileSignature, UCardGameCardPile*, CardPileClass, int32, PositionInCardPile, FCardGameCardModel, Card);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FCardGameCardPileSubsystemCardAddedToPlayerCardPileSignature, uint8, PlayerIndex, UCardGameCardPile*, CardPileClass, int32, PositionInCardPile, FCardGameCardModel, Card);
 
 UCLASS()
 class CARDGAME_API UCardGameCardPileSubsystem : public UCardGameSubsystem
@@ -56,8 +56,8 @@ private:
 	FDelegateHandle OnCardAddedToPlayerCardPileHandle;
 	
 	UFUNCTION()
-	void NotifyOnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
+	void NotifyOnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, int32 PositionInCardPile, FCardGameCardModel Card);
 
 	UFUNCTION()
-	void NotifyOnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass, FCardGameCardModel Card);
+	void NotifyOnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass, int32 PositionInCardPile, FCardGameCardModel Card);
 };

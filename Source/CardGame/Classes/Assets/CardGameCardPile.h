@@ -4,7 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "CardGameCardPile.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class CARDGAME_API UCardGameCardPile : public UDataAsset
 {
 	GENERATED_BODY()

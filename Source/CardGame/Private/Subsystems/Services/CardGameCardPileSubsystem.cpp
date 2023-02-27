@@ -109,13 +109,13 @@ void UCardGameCardPileSubsystem::MoveCardBetweenPlayerCardPiles(AController* Pla
 }
 
 void UCardGameCardPileSubsystem::NotifyOnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass,
-	FCardGameCardModel Card)
+	int32 PositionInCardPile, FCardGameCardModel Card)
 {
-	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, Card);
+	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, PositionInCardPile, Card);
 }
 
 void UCardGameCardPileSubsystem::NotifyOnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass,
-	FCardGameCardModel Card)
+	int32 PositionInCardPile, FCardGameCardModel Card)
 {
-	OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, Card);
+	OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, PositionInCardPile, Card);
 }

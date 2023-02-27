@@ -15,9 +15,9 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 	// Raise initial events.
 	for (const FCardGameCardPileModel& CardPile : Model.GlobalCardPiles)
 	{
-		for (const FCardGameCardModel& Card : CardPile.Cards)
+		for (int32 Index = 0; Index < CardPile.Cards.Num(); ++Index)
 		{
-			OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Card);
+			OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Index, CardPile.Cards[Index]);
 		}
 	}
 
@@ -25,27 +25,28 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 	{
 		for (const FCardGameCardPileModel& CardPile : Player.PlayerCardPiles)
 		{
-			for (const FCardGameCardModel& Card : CardPile.Cards)
+			for (int32 Index = 0; Index < CardPile.Cards.Num(); ++Index)
 			{
-				OnCardAddedToPlayerCardPile(Player.PlayerIndex, CardPile.CardPileClass, Card);
+				OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Index, CardPile.Cards[Index]);
 			}
 		}
 	}
 }
 
-void UCardGameActorManager::OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, FCardGameCardModel Card)
+void UCardGameActorManager::OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, int32 PositionInCardPile,
+	FCardGameCardModel Card)
 {
-	SpawnCardActor(CardPileClass, Card, TOptional<uint8>());
+	SpawnCardActor(CardPileClass, PositionInCardPile, Card, TOptional<uint8>());
 }
 
 void UCardGameActorManager::OnCardAddedToPlayerCardPile(uint8 PlayerIndex, UCardGameCardPile* CardPileClass,
-	FCardGameCardModel Card)
+	int32 PositionInCardPile, FCardGameCardModel Card)
 {
-	SpawnCardActor(CardPileClass, Card, PlayerIndex);
+	SpawnCardActor(CardPileClass, PositionInCardPile, Card, PlayerIndex);
 }
 
-void UCardGameActorManager::SpawnCardActor(UCardGameCardPile* CardPileClass, FCardGameCardModel Card,
-	TOptional<uint8> PlayerIndex)
+void UCardGameActorManager::SpawnCardActor(UCardGameCardPile* CardPileClass, int32 PositionInCardPile,
+	FCardGameCardModel Card, TOptional<uint8> PlayerIndex)
 {
 	ACardGameActor* CardActor = GetWorld()->SpawnActor<ACardGameActor>(CardActorClass);
 
@@ -61,5 +62,5 @@ void UCardGameActorManager::SpawnCardActor(UCardGameCardPile* CardPileClass, FCa
 	UE_LOG(LogCardGame, Log, TEXT("Spawned actor %s for card %s (%d)."), *CardActor->GetName(),
 		*Card.CardClass->GetName(), Card.InstanceId);
 
-	CardActor->Init(Card, CardPileClass, PlayerIndex);
+	CardActor->Init(Card, CardPileClass, PositionInCardPile, PlayerIndex);
 }

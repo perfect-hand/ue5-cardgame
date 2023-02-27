@@ -14,10 +14,13 @@ class CARDGAME_API ACardGameActor : public AActor
 	GENERATED_BODY()
 
 public:
-	void Init(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass, TOptional<uint8> PlayerIndex);
+	void Init(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass, int32 PositionInCardPile,
+		TOptional<uint8> PlayerIndex);
 
-	virtual void NotifyOnInit(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass, TOptional<uint8> PlayerIndex);
+	virtual void NotifyOnInit(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass,
+		int32 PositionInCardPile, TOptional<uint8> PlayerIndex);
 	
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="Init"))
-	void ReceiveOnInit(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass, uint8 PlayerIndex, bool bHasPlayer);
+	void ReceiveOnInit(const FCardGameCardModel& Model, UCardGameCardPile* CardPileClass, int32 PositionInCardPile,
+		uint8 PlayerIndex, bool bHasPlayer);
 };

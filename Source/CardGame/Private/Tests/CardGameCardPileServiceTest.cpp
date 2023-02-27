@@ -14,11 +14,13 @@ namespace
 	{
 	public:
 		UCardGameCardPile* CardPileClass;
+		int32 PositionInCardPile;
 		FCardGameCardModel Card;
-	
-		void OnCardAddedToGlobalCardPile(UCardGameCardPile* InCardPileClass, FCardGameCardModel InCard)
+		
+		void OnCardAddedToGlobalCardPile(UCardGameCardPile* InCardPileClass, int32 InPositionInCardPile, FCardGameCardModel InCard)
 		{
 			CardPileClass = InCardPileClass;
+			PositionInCardPile = InPositionInCardPile;
 			Card = InCard;
 		}
 	};
