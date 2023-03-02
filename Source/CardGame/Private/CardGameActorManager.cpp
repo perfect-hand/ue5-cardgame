@@ -3,17 +3,18 @@
 #include "Assets/CardGameCard.h"
 #include "Assets/CardGameCardPile.h"
 #include "CardGameLogCategory.h"
-#include "Subsystems/Services/CardGameCardPileSubsystem.h"
 
-void UCardGameActorManager::Init(FCardGameModel& Model)
+void UCardGameActorManager::Init(UCardGameServiceContext* InContext)
 {
-	GetWorld()->GetSubsystem<UCardGameCardPileSubsystem>()->OnCardAddedToGlobalCardPile.AddDynamic
-		(this, &UCardGameActorManager::OnCardAddedToGlobalCardPile);
-	GetWorld()->GetSubsystem<UCardGameCardPileSubsystem>()->OnCardAddedToPlayerCardPile.AddDynamic
-		(this, &UCardGameActorManager::OnCardAddedToPlayerCardPile);
+	Context = InContext;
+	
+	Context->OnCardAddedToGlobalCardPile.AddDynamic(this, &UCardGameActorManager::OnCardAddedToGlobalCardPile);
+	Context->OnCardAddedToPlayerCardPile.AddDynamic(this, &UCardGameActorManager::OnCardAddedToPlayerCardPile);
 	
 	// Raise initial events.
-	for (const FCardGameCardPileModel& CardPile : Model.GlobalCardPiles)
+	const TSharedPtr<const FCardGameModel> Model = Context->GetModel().Pin();
+	
+	for (const FCardGameCardPileModel& CardPile : Model->GlobalCardPiles)
 	{
 		for (int32 Index = 0; Index < CardPile.Cards.Num(); ++Index)
 		{
@@ -21,7 +22,7 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 		}
 	}
 
-	for (const FCardGamePlayerModel& Player : Model.Players)
+	for (const FCardGamePlayerModel& Player : Model->Players)
 	{
 		for (const FCardGameCardPileModel& CardPile : Player.PlayerCardPiles)
 		{
@@ -33,8 +34,14 @@ void UCardGameActorManager::Init(FCardGameModel& Model)
 	}
 }
 
+void UCardGameActorManager::DeInit()
+{
+	Context->OnCardAddedToGlobalCardPile.RemoveDynamic(this, &UCardGameActorManager::OnCardAddedToGlobalCardPile);
+	Context->OnCardAddedToPlayerCardPile.RemoveDynamic(this, &UCardGameActorManager::OnCardAddedToPlayerCardPile);
+}
+
 void UCardGameActorManager::OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, int32 PositionInCardPile,
-	FCardGameCardModel Card)
+                                                        FCardGameCardModel Card)
 {
 	SpawnCardActor(CardPileClass, PositionInCardPile, Card, TOptional<uint8>());
 }

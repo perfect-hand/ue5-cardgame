@@ -23,22 +23,27 @@ class CARDGAME_API ACardGameMode : public AGameModeBase
 public:
 	ACardGameMode(const FObjectInitializer& ObjectInitializer);
 
-	FCardGameModel& GetModel();
-
-	UFUNCTION(BlueprintCallable)
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	UFUNCTION(BlueprintCallable, Category="Card Game")
 	void StartGame();
 
+	UFUNCTION(BlueprintPure, Category="Card Game")
+	UCardGameServiceContext* GetContext() const;
+	
 protected:
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
 		const FString& Options, const FString& Portal) override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	UCardGameConfiguration* Configuration;
+	TObjectPtr<UCardGameConfiguration> Configuration;
+	
+	TSharedPtr<FCardGameModel> Model;
+
+	UPROPERTY()
+	TObjectPtr<UCardGameServiceContext> Context;
 	
 	UPROPERTY()
-	FCardGameModel Model;
-	
-	UPROPERTY()
-	TArray<ACardGamePlayerState*> Players;
+	TArray<TObjectPtr<ACardGamePlayerState>> Players;
 };

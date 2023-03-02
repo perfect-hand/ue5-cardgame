@@ -3,25 +3,33 @@
 #include "CardGameLogCategory.h"
 #include "CardGamePlayerController.h"
 #include "CardGamePlayerState.h"
-#include "Subsystems/Services/CardGameCardPileSubsystem.h"
-#include "Subsystems/Services/CardGamePlayerSubsystem.h"
 
 ACardGameMode::ACardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PlayerStateClass = ACardGamePlayerState::StaticClass();
+
+	Model = MakeShared<FCardGameModel>();
+	
+	Context = ObjectInitializer.CreateDefaultSubobject<UCardGameServiceContext>(this, TEXT("Context"));
+	Context->Init(Model);
 }
 
-FCardGameModel& ACardGameMode::GetModel()
+void ACardGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	return Model;
+	Super::EndPlay(EndPlayReason);
+
+	if (Context)
+	{
+		Context->DeInit();
+	}
 }
 
 void ACardGameMode::StartGame()
 {
 	// Add global card piles.
-	GetWorld()->GetSubsystem<UCardGameCardPileSubsystem>()->AddGlobalCardPiles(Configuration);
-	
+	Context->AddGlobalCardPiles(Configuration);
+
 	// Start game.
 	for (const ACardGamePlayerState* P : Players)
 	{
@@ -32,8 +40,13 @@ void ACardGameMode::StartGame()
 			continue;
 		}
 
-		PC->ClientGameStarted(Model);
+		PC->ClientGameStarted(*Model);
 	}
+}
+
+UCardGameServiceContext* ACardGameMode::GetContext() const
+{
+	return Context;
 }
 
 FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId,
@@ -57,7 +70,7 @@ FString ACardGameMode::InitNewPlayer(APlayerController* NewPlayerController, con
 	Players.Add(NewPlayer);
 	
 	// Add player to model.
-	const int32 NewPlayerIndex = GetWorld()->GetSubsystem<UCardGamePlayerSubsystem>()->AddPlayer(Configuration);
+	const int32 NewPlayerIndex = Context->AddPlayer(Configuration);
 	
 	// Set player index for future model reference.
 	NewPlayer->SetPlayerIndex(NewPlayerIndex);

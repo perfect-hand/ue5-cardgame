@@ -10,6 +10,7 @@
 
 #include "CardGameActorManager.generated.h"
 
+class UCardGameServiceContext;
 struct FCardGameCardModel;
 
 UCLASS(BlueprintType, Blueprintable)
@@ -18,14 +19,18 @@ class CARDGAME_API UCardGameActorManager : public UObject
 	GENERATED_BODY()
 
 public:
-	void Init(FCardGameModel& Model);
-
+	void Init(UCardGameServiceContext* InContext);
+	void DeInit();
+	
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ACardGameActor> CardActorClass;
 
 	UPROPERTY()
-	TMap<int64, ACardGameActor*> CardActors;
+	TMap<int64, TObjectPtr<ACardGameActor>> CardActors;
+
+	UPROPERTY()
+	TObjectPtr<UCardGameServiceContext> Context;
 	
 	UFUNCTION()
 	void OnCardAddedToGlobalCardPile(UCardGameCardPile* CardPileClass, int32 PositionInCardPile, FCardGameCardModel Card);

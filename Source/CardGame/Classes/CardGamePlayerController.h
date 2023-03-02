@@ -9,6 +9,7 @@
 
 #include "CardGamePlayerController.generated.h"
 
+class UCardGameServiceContext;
 class UCardGameAttribute;
 
 
@@ -19,22 +20,26 @@ class CARDGAME_API ACardGamePlayerController : public APlayerController
 
 public:
 	ACardGamePlayerController(const FObjectInitializer& ObjectInitializer);
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	UFUNCTION(Reliable, Client)
 	void ClientGameStarted(const FCardGameModel& InModel);
 
 	virtual void NotifyOnGameStarted();
 	
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="On Game Started"))
 	void ReceiveOnGameStarted();
 	
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCardGameActorManager> ActorManagerClass;
 	
-	UPROPERTY()
-	FCardGameModel ClientModel;
+	TSharedPtr<FCardGameModel> ClientModel;
 
 	UPROPERTY()
-	UCardGameActorManager* ActorManager;
+	TObjectPtr<UCardGameServiceContext> Context;
+	
+	UPROPERTY()
+	TObjectPtr<UCardGameActorManager> ActorManager;
 };
