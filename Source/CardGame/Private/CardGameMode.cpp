@@ -40,7 +40,7 @@ void ACardGameMode::StartGame()
 			continue;
 		}
 
-		PC->ClientGameStarted(*Model);
+		PC->ClientGameStarted(Configuration, *Model);
 	}
 }
 
