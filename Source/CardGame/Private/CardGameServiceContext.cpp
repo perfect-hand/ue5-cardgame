@@ -6,6 +6,7 @@
 #include "Providers/CardGameRandomNumberProvider.h"
 #include "Services/CardGameAttributeService.h"
 #include "Services/CardGameCardPileService.h"
+#include "Services/CardGameGameplayTagService.h"
 #include "Services/CardGamePlayerService.h"
 
 void UCardGameServiceContext::Init(TWeakPtr<FCardGameModel> InModel)
@@ -17,6 +18,7 @@ void UCardGameServiceContext::Init(TWeakPtr<FCardGameModel> InModel)
 
 	AttributeService = MakeUnique<FCardGameAttributeService>();
 	CardPileService = MakeUnique<FCardGameCardPileService>(*CardInstanceIdProvider, *RandomNumberProvider);
+	GameplayTagService = MakeUnique<FCardGameGameplayTagService>();
 	PlayerService = MakeUnique<FCardGamePlayerService>();
 	
 	OnCardAddedToGlobalCardPileHandle = CardPileService->OnCardAddedToGlobalCardPile.AddUObject
@@ -166,6 +168,33 @@ void UCardGameServiceContext::MoveCardBetweenPlayerCardPiles(AController* Player
 	}
 
 	CardPileService->MoveCardBetweenPlayerCardPiles(*Model.Pin(), PlayerState->GetPlayerIndex(), From, To, CardIndex);
+}
+
+FGameplayTagContainer UCardGameServiceContext::GetCardGameplayTags(const ACardGameActor* Card) const
+{
+	if (!IsValid(Card))
+	{
+		return FGameplayTagContainer();
+	}
+
+	TOptional<FCardGameCardModel> CardModel = GetCardModel(Card);
+
+	if (!CardModel.IsSet())
+	{
+		return FGameplayTagContainer();
+	}
+	
+	return GameplayTagService->GetCardGameplayTags(*Model.Pin(), CardModel.GetValue());
+}
+
+void UCardGameServiceContext::AddGlobalGameplayTag(const FGameplayTag& TagToAdd)
+{
+	GameplayTagService->AddGlobalGameplayTag(*Model.Pin(), TagToAdd);
+}
+
+void UCardGameServiceContext::RemoveGlobalGameplayTag(const FGameplayTag& TagToRemove)
+{
+	GameplayTagService->RemoveGlobalGameplayTag(*Model.Pin(), TagToRemove);
 }
 
 int32 UCardGameServiceContext::AddPlayer(const UCardGameConfiguration* Configuration)

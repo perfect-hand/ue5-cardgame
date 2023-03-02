@@ -12,6 +12,8 @@ class UCardGameConfiguration;
 class UCardGameCard;
 class FCardGameAttributeService;
 class UCardGameAttribute;
+class FCardGameGameplayTagService;
+struct FGameplayTag;
 struct FCardGameModel;
 class FCardGameRandomNumberProvider;
 class FCardGameCardInstanceIdProvider;
@@ -65,7 +67,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Card Game|Card Piles")
 	void MoveCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
+
+	FGameplayTagContainer GetCardGameplayTags(const ACardGameActor* Card) const;
 	
+	UFUNCTION(BlueprintCallable, Category="Card Game|Gameplay Tags")
+	void AddGlobalGameplayTag(const FGameplayTag& TagToAdd);
+
+	UFUNCTION(BlueprintCallable, Category="Card Game|Gameplay Tags")
+	void RemoveGlobalGameplayTag(const FGameplayTag& TagToRemove);
+
 	int32 AddPlayer(const UCardGameConfiguration* Configuration);
 	
 	FCardGameServiceContextCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
@@ -79,6 +89,7 @@ private:
 
 	TUniquePtr<FCardGameAttributeService> AttributeService;
 	TUniquePtr<FCardGameCardPileService> CardPileService;
+	TUniquePtr<FCardGameGameplayTagService> GameplayTagService;
 	TUniquePtr<FCardGamePlayerService> PlayerService;
 	
 	FDelegateHandle OnCardAddedToGlobalCardPileHandle;
