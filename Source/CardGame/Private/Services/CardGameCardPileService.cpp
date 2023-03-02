@@ -222,6 +222,14 @@ FCardGameCardModel FCardGameCardPileService::AddCard(FCardGameCardPileModel& Car
 	NewCard.InstanceId = InstanceId;
 	NewCard.CardClass = CardClass;
 	
+	for (const auto& InitialAttributeValue : CardClass->GetInitialAttributes())
+	{
+		FCardGameAttributeWithValue AttributeWithValue(InitialAttributeValue.Key, InitialAttributeValue.Value);
+		NewCard.CardModel.Attributes.Add(AttributeWithValue);
+	}
+
+	NewCard.CardModel.GameplayTags.AppendTags(CardClass->GetInitialGameplayTags());
+	
 	CardPile.Cards.Add(NewCard);
 	return NewCard;
 }
