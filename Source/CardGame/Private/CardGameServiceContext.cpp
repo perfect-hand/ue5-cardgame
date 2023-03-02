@@ -1,5 +1,6 @@
 ﻿#include "CardGameServiceContext.h"
 
+#include "CardGameActor.h"
 #include "CardGamePlayerState.h"
 #include "Providers/CardGameCardInstanceIdProvider.h"
 #include "Providers/CardGameRandomNumberProvider.h"
@@ -81,6 +82,16 @@ void UCardGameServiceContext::SetPlayerAttributeValue(AController* Player, UCard
 	}
 	
 	return AttributeService->SetPlayerAttributeValue(*Model.Pin(), PlayerState->GetPlayerIndex(), Attribute, NewValue);
+}
+
+TOptional<FCardGameCardModel> UCardGameServiceContext::GetCardModel(const ACardGameActor* Card) const
+{
+	if (!IsValid(Card))
+	{
+		return TOptional<FCardGameCardModel>();
+	}
+
+	return CardPileService->GetCardModelByInstanceId(*Model.Pin(), Card->GetInstanceId());
 }
 
 void UCardGameServiceContext::AddGlobalCardPiles(UCardGameConfiguration* Configuration)

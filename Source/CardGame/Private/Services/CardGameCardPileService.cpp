@@ -16,6 +16,37 @@ FCardGameCardPileService::FCardGameCardPileService(FCardGameCardInstanceIdProvid
 {
 }
 
+TOptional<FCardGameCardModel> FCardGameCardPileService::GetCardModelByInstanceId(const FCardGameModel& Model,
+	int64 InstanceId) const
+{
+	for (const FCardGameCardPileModel& GlobalCardPile : Model.GlobalCardPiles)
+	{
+		for (const FCardGameCardModel& Card : GlobalCardPile.Cards)
+		{
+			if (Card.InstanceId == InstanceId)
+			{
+				return Card;
+			}
+		}
+	}
+
+	for (const FCardGamePlayerModel& Player : Model.Players)
+	{
+		for (const FCardGameCardPileModel& GlobalCardPile : Player.PlayerCardPiles)
+		{
+			for (const FCardGameCardModel& Card : GlobalCardPile.Cards)
+			{
+				if (Card.InstanceId == InstanceId)
+				{
+					return Card;
+				}
+			}
+		}
+	}
+
+	return TOptional<FCardGameCardModel>();
+}
+
 void FCardGameCardPileService::AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const
 {
 	for (UCardGameCardPile* CardPileClass : Configuration->GetGlobalCardPileClasses())

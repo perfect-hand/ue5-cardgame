@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "CardGameServiceContext.generated.h"
 
+class ACardGameActor;
 class FCardGamePlayerService;
 class UCardGameConfiguration;
 class UCardGameCard;
@@ -44,6 +45,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card Game|Attributes")
 	void SetPlayerAttributeValue(AController* Player, UCardGameAttribute* Attribute, int32 NewValue);
 
+	TOptional<FCardGameCardModel> GetCardModel(const ACardGameActor* Card) const;
 	void AddGlobalCardPiles(UCardGameConfiguration* Configuration);
 	
 	UFUNCTION(BlueprintCallable, Category="Card Game|Card Piles")

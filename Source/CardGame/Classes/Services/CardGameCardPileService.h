@@ -20,7 +20,8 @@ class CARDGAME_API FCardGameCardPileService
 public:
 	explicit FCardGameCardPileService(FCardGameCardInstanceIdProvider& CardInstanceIdProvider,
 		FCardGameRandomNumberProvider& RandomNumberProvider);
-	
+
+	TOptional<FCardGameCardModel> GetCardModelByInstanceId(const FCardGameModel& Model, int64 InstanceId) const;
 	void AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const;
 	void AddCardToGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass,
 		UCardGameCard* CardClass) const;
