@@ -9,6 +9,7 @@
 
 #include "CardGamePlayerController.generated.h"
 
+class UCardGameConfiguration;
 class UCardGameServiceContext;
 class UCardGameAttribute;
 
@@ -24,7 +25,7 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	UFUNCTION(Reliable, Client)
-	void ClientGameStarted(const FCardGameModel& InModel);
+	void ClientGameStarted(UCardGameConfiguration* InGameConfiguration, const FCardGameModel& InModel);
 
 	virtual void NotifyOnGameStarted();
 	
@@ -34,6 +35,8 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCardGameActorManager> ActorManagerClass;
+
+	TObjectPtr<UCardGameConfiguration> GameConfiguration;
 	
 	TSharedPtr<FCardGameModel> ClientModel;
 

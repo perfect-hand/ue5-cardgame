@@ -2,6 +2,7 @@
 
 #include "CardGameLogCategory.h"
 #include "CardGameServiceContext.h"
+#include "Assets/CardGameConfiguration.h"
 
 ACardGamePlayerController::ACardGamePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -24,13 +25,11 @@ void ACardGamePlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason
 	}
 }
 
-void ACardGamePlayerController::NotifyOnGameStarted()
+void ACardGamePlayerController::ClientGameStarted_Implementation(UCardGameConfiguration* InGameConfiguration,
+	const FCardGameModel& InModel)
 {
-	ReceiveOnGameStarted();
-}
-
-void ACardGamePlayerController::ClientGameStarted_Implementation(const FCardGameModel& InModel)
-{
+	GameConfiguration = InGameConfiguration;
+	
 	ClientModel = MakeShared<FCardGameModel>();
 	*ClientModel = InModel;
 
@@ -44,4 +43,9 @@ void ACardGamePlayerController::ClientGameStarted_Implementation(const FCardGame
 	UE_LOG(LogCardGame, Log, TEXT("Game started!"));
 	
 	NotifyOnGameStarted();
+}
+
+void ACardGamePlayerController::NotifyOnGameStarted()
+{
+	ReceiveOnGameStarted();
 }
