@@ -6,13 +6,11 @@
 #include "GameplayTagContainer.h"
 
 #include "CardGameAbility.h"
-#include "CardGameAttribute.h"
 
 #include "CardGameCard.generated.h"
 
-
 class UTexture2D;
-
+class UCardGameAttribute;
 
 UCLASS(BlueprintType)
 class CARDGAME_API UCardGameCard : public UDataAsset
@@ -22,6 +20,9 @@ class CARDGAME_API UCardGameCard : public UDataAsset
 public:
 	UFUNCTION(BlueprintPure)
 	FText GetCardName() const;
+	
+	const TMap<UCardGameAttribute*, int32>& GetInitialAttributes() const;
+	const FGameplayTagContainer& GetInitialGameplayTags() const;
 	
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -43,7 +44,7 @@ private:
 	int32 CardSetIndex;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TMap<TSubclassOf<UCardGameAttribute>, int32> InitialAttributes;
+	TMap<UCardGameAttribute*, int32> InitialAttributes;
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer InitialGameplayTags;
