@@ -5,7 +5,6 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "Model/CardGameModel.h"
-#include "Model/CardGameScope.h"
 
 #include "CardGameMode.generated.h"
 
