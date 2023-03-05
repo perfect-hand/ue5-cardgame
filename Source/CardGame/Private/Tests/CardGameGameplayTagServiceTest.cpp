@@ -6,14 +6,16 @@
 
 namespace CardGameGameplayTagServiceTest
 {
-	struct FNativeGameplayTags : public FGameplayTagNativeAdder
+	struct FNativeGameplayTags : FGameplayTagNativeAdder
 	{
-		FGameplayTag TestTag;
-
+		FGameplayTag TestTagA;
+		FGameplayTag TestTagB;
+		
 		virtual void AddTags() override
 		{
 			UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
-			TestTag = Manager.AddNativeGameplayTag(TEXT("CardGameGameplayTagServiceTest.TestTag"));
+			TestTagA = Manager.AddNativeGameplayTag(TEXT("CardGameGameplayTagServiceTest.TestTag.A"));
+			TestTagB = Manager.AddNativeGameplayTag(TEXT("CardGameGameplayTagServiceTest.TestTag.B"));
 		}
 
 		FORCEINLINE static const FNativeGameplayTags& Get()
@@ -25,12 +27,36 @@ namespace CardGameGameplayTagServiceTest
 	FNativeGameplayTags FNativeGameplayTags::StaticInstance;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGetCardGameplayTagsTest, "CardGame.GameplayTagService.GetCardGameplayTags", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FGetCardGameplayTagsTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	const FGameplayTag TestTagA = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTagA;
+	const FGameplayTag TestTagB = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTagB;
+
+	FCardGameModel GameModel;
+	GameModel.GlobalModel.GameplayTags.AddTag(TestTagA);
+
+	FCardGameCardModel CardModel;
+	CardModel.CardModel.GameplayTags.AddTag(TestTagB);
+	
+	// ACT
+	constexpr FCardGameGameplayTagService GameplayTagService;
+	FGameplayTagContainer CombinedTags = GameplayTagService.GetCardGameplayTags(GameModel, CardModel);
+
+	// ASSERT
+	TestTrue(TEXT("CombinedTags Has Test Tag A"), CombinedTags.HasTag(TestTagA));
+	TestTrue(TEXT("CombinedTags Has Test Tag B"), CombinedTags.HasTag(TestTagB));
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddGlobalGameplayTagTest, "CardGame.GameplayTagService.AddGlobalGameplayTag", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FAddGlobalGameplayTagTest::RunTest(const FString& Parameters)
 {
 	// ARRANGE
-	const FGameplayTag TestTag = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTag;
+	const FGameplayTag TestTag = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTagA;
 	FCardGameModel Model;
 	
 	// ACT
@@ -47,7 +73,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRemoveGlobalGameplayTagTest, "CardGame.Gamepla
 bool FRemoveGlobalGameplayTagTest::RunTest(const FString& Parameters)
 {
 	// ARRANGE
-	const FGameplayTag TestTag = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTag;
+	const FGameplayTag TestTag = CardGameGameplayTagServiceTest::FNativeGameplayTags::Get().TestTagA;
 
 	FCardGameModel Model;
 	Model.GlobalModel.GameplayTags.AddTag(TestTag);

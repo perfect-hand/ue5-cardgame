@@ -22,7 +22,10 @@ public:
 	FText GetCardName() const;
 	
 	const TMap<UCardGameAttribute*, int32>& GetInitialAttributes() const;
+	void SetInitialAttributes(const TMap<UCardGameAttribute*, int32>& InInitialAttributes);
+	
 	const FGameplayTagContainer& GetInitialGameplayTags() const;
+	void SetInitialGameplayTags(const FGameplayTagContainer& InInitialGameplayTags);
 	
 private:
 	UPROPERTY(EditDefaultsOnly)

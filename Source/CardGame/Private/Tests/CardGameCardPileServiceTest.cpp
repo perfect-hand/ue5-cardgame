@@ -1,5 +1,8 @@
 ﻿#include "Misc/AutomationTest.h"
 
+#include "GameplayTagsManager.h"
+
+#include "Assets/CardGameAttribute.h"
 #include "Assets/CardGameCard.h"
 #include "Assets/CardGameCardPile.h"
 #include "Assets/CardGameConfiguration.h"
@@ -8,7 +11,7 @@
 #include "Providers/CardGameRandomNumberProvider.h"
 #include "Services/CardGameCardPileService.h"
 
-namespace
+namespace CardGameCardPileServiceTest
 {
 	class FOnCardAddedToGlobalCardPileTestEventHandler
 	{
@@ -24,6 +27,113 @@ namespace
 			Card = InCard;
 		}
 	};
+
+	class FOnCardAddedToPlayerCardPileTestEventHandler
+	{
+	public:
+		uint8 PlayerIndex;
+		UCardGameCardPile* CardPileClass;
+		int32 PositionInCardPile;
+		FCardGameCardModel Card;
+		
+		void OnCardAddedToPlayerCardPile(uint8 InPlayerIndex, UCardGameCardPile* InCardPileClass, int32 InPositionInCardPile, FCardGameCardModel InCard)
+		{
+			PlayerIndex = InPlayerIndex;
+			CardPileClass = InCardPileClass;
+			PositionInCardPile = InPositionInCardPile;
+			Card = InCard;
+		}
+	};
+	
+	struct FNativeGameplayTags : FGameplayTagNativeAdder
+	{
+		FGameplayTag TestTagA;
+		FGameplayTag TestTagB;
+	
+		virtual void AddTags() override
+		{
+			UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
+			TestTagA = Manager.AddNativeGameplayTag(TEXT("CardGameCardPileServiceTest.TestTag.A"));
+			TestTagB = Manager.AddNativeGameplayTag(TEXT("CardGameCardPileServiceTest.TestTag.B"));
+		}
+
+		FORCEINLINE static const FNativeGameplayTags& Get()
+		{
+			return StaticInstance;
+		}
+		static FNativeGameplayTags StaticInstance;
+	};
+	FNativeGameplayTags FNativeGameplayTags::StaticInstance;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGetCardModelByInstanceIdGetsGlobalCardTest, "CardGame.CardPileService.GetCardModelByInstanceIdGetsGlobalCard", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FGetCardModelByInstanceIdGetsGlobalCardTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+	Model.GlobalCardPiles.Add(TestCardPile);
+
+	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
+	
+	FCardGameCardModel TestCard;
+	TestCard.InstanceId = 2;
+	TestCard.CardClass = TestCardClass;
+	Model.GlobalCardPiles[0].Cards.Add(TestCard);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	TOptional<FCardGameCardModel> FoundCard = CardPileService.GetCardModelByInstanceId(Model, TestCard.InstanceId);
+	
+	// ASSERT
+	TestTrue(TEXT("Has Found Card"), FoundCard.IsSet());
+	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 2LL);
+	TestEqual(TEXT("Card Class"), FoundCard.GetValue().CardClass, TestCardClass);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGetCardModelByInstanceIdGetsPlayerCardTest, "CardGame.CardPileService.GetCardModelByInstanceIdGetsPlayerCard", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FGetCardModelByInstanceIdGetsPlayerCardTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+	
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	Player.PlayerCardPiles.Add(TestCardPile);
+	Model.Players.Add(Player);
+
+	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
+	
+	FCardGameCardModel TestCard;
+	TestCard.InstanceId = 2;
+	TestCard.CardClass = TestCardClass;
+	Model.Players[0].PlayerCardPiles[0].Cards.Add(TestCard);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	TOptional<FCardGameCardModel> FoundCard = CardPileService.GetCardModelByInstanceId(Model, TestCard.InstanceId);
+	
+	// ASSERT
+	TestTrue(TEXT("Has Found Card"), FoundCard.IsSet());
+	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 2LL);
+	TestEqual(TEXT("Card Class"), FoundCard.GetValue().CardClass, TestCardClass);
+	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddGlobalCardPilesTest, "CardGame.CardPileService.AddGlobalCardPiles", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
@@ -114,6 +224,81 @@ bool FAddCardToGlobalCardPileSetsCardClassTest::RunTest(const FString& Parameter
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToGlobalCardPileSetsAttributesTest, "CardGame.CardPileService.AddCardToGlobalCardPileSetsAttributes", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FAddCardToGlobalCardPileSetsAttributesTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+	Model.GlobalCardPiles.Add(TestCardPile);
+
+	UCardGameCard* TestCard = NewObject<UCardGameCard>();
+
+	UCardGameAttribute* TestAttribute1 = NewObject<UCardGameAttribute>();
+	UCardGameAttribute* TestAttribute2 = NewObject<UCardGameAttribute>();
+	
+	TMap<UCardGameAttribute*, int32> InitialAttributes;
+	InitialAttributes.Add(TestAttribute1, 2);
+	InitialAttributes.Add(TestAttribute2, 3);
+	TestCard->SetInitialAttributes(InitialAttributes);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
+	TestEqual(TEXT("Num Attributes"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes.Num(), 2);
+	TestEqual(TEXT("Attribute 1 Class"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
+	TestEqual(TEXT("Attribute 1 Value"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[0].Value, 2);
+	TestEqual(TEXT("Attribute 2 Class"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
+	TestEqual(TEXT("Attribute 2 Value"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[1].Value, 3);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToGlobalCardPileSetsGameplayTagsTest, "CardGame.CardPileService.AddCardToGlobalCardPileSetsGameplayTags", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FAddCardToGlobalCardPileSetsGameplayTagsTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+	Model.GlobalCardPiles.Add(TestCardPile);
+
+	UCardGameCard* TestCard = NewObject<UCardGameCard>();
+	
+	const FGameplayTag TestTagA = CardGameCardPileServiceTest::FNativeGameplayTags::Get().TestTagA;
+	const FGameplayTag TestTagB = CardGameCardPileServiceTest::FNativeGameplayTags::Get().TestTagB;
+
+	FGameplayTagContainer TestGameplayTags;
+	TestGameplayTags.AddTag(TestTagA);
+	TestGameplayTags.AddTag(TestTagB);
+	TestCard->SetInitialGameplayTags(TestGameplayTags);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.GlobalCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.GlobalCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToGlobalCardPileRaisesEventTest, "CardGame.CardPileService.AddCardToGlobalCardPileRaisesEvent", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FAddCardToGlobalCardPileRaisesEventTest::RunTest(const FString& Parameters)
@@ -133,8 +318,9 @@ bool FAddCardToGlobalCardPileRaisesEventTest::RunTest(const FString& Parameters)
 	FCardGameRandomNumberProvider RandomNumberProvider;
 	FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
 
-	FOnCardAddedToGlobalCardPileTestEventHandler TestEventHandler;
-	CardPileService.OnCardAddedToGlobalCardPile.AddRaw(&TestEventHandler, &FOnCardAddedToGlobalCardPileTestEventHandler::OnCardAddedToGlobalCardPile);
+	CardGameCardPileServiceTest::FOnCardAddedToGlobalCardPileTestEventHandler TestEventHandler;
+	CardPileService.OnCardAddedToGlobalCardPile.AddRaw(&TestEventHandler,
+		&CardGameCardPileServiceTest::FOnCardAddedToGlobalCardPileTestEventHandler::OnCardAddedToGlobalCardPile);
 	
 	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
 	
@@ -206,6 +392,125 @@ bool FAddCardToPlayerCardPileSetsCardClassTest::RunTest(const FString& Parameter
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
 	TestEqual(TEXT("Card Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardClass, TestCard);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToPlayerCardPileSetsAttributesTest, "CardGame.CardPileService.AddCardToPlayerCardPileSetsAttributes", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FAddCardToPlayerCardPileSetsAttributesTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	Player.PlayerCardPiles.Add(TestCardPile);
+	Model.Players.Add(Player);
+
+	UCardGameCard* TestCard = NewObject<UCardGameCard>();
+
+	UCardGameAttribute* TestAttribute1 = NewObject<UCardGameAttribute>();
+	UCardGameAttribute* TestAttribute2 = NewObject<UCardGameAttribute>();
+	
+	TMap<UCardGameAttribute*, int32> InitialAttributes;
+	InitialAttributes.Add(TestAttribute1, 2);
+	InitialAttributes.Add(TestAttribute2, 3);
+	TestCard->SetInitialAttributes(InitialAttributes);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
+	TestEqual(TEXT("Num Attributes"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes.Num(), 2);
+	TestEqual(TEXT("Attribute 1 Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
+	TestEqual(TEXT("Attribute 1 Value"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[0].Value, 2);
+	TestEqual(TEXT("Attribute 2 Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
+	TestEqual(TEXT("Attribute 2 Value"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[1].Value, 3);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToPlayerCardPileSetsGameplayTagsTest, "CardGame.CardPileService.AddCardToPlayerCardPileSetsGameplayTags", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FAddCardToPlayerCardPileSetsGameplayTagsTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	Player.PlayerCardPiles.Add(TestCardPile);
+	Model.Players.Add(Player);
+
+	UCardGameCard* TestCard = NewObject<UCardGameCard>();
+	
+	const FGameplayTag TestTagA = CardGameCardPileServiceTest::FNativeGameplayTags::Get().TestTagA;
+	const FGameplayTag TestTagB = CardGameCardPileServiceTest::FNativeGameplayTags::Get().TestTagB;
+
+	FGameplayTagContainer TestGameplayTags;
+	TestGameplayTags.AddTag(TestTagA);
+	TestGameplayTags.AddTag(TestTagB);
+	TestCard->SetInitialGameplayTags(TestGameplayTags);
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	
+	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToPlayerCardPileRaisesEventTest, "CardGame.CardPileService.AddCardToPlayerCardPileRaisesEvent", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FAddCardToPlayerCardPileRaisesEventTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+	
+	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel TestCardPile;
+	TestCardPile.CardPileClass = TestCardPileClass;
+	
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	Player.PlayerCardPiles.Add(TestCardPile);
+	Model.Players.Add(Player);
+
+	UCardGameCard* TestCard = NewObject<UCardGameCard>();
+	
+	// ACT
+	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+
+	CardGameCardPileServiceTest::FOnCardAddedToPlayerCardPileTestEventHandler TestEventHandler;
+	CardPileService.OnCardAddedToPlayerCardPile.AddRaw(&TestEventHandler,
+		&CardGameCardPileServiceTest::FOnCardAddedToPlayerCardPileTestEventHandler::OnCardAddedToPlayerCardPile);
+	
+	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
+	
+	// ASSERT
+	TestEqual(TEXT("Event Player Index"), TestEventHandler.PlayerIndex, Player.PlayerIndex);
+	TestEqual(TEXT("Event Card Pile Class"), TestEventHandler.CardPileClass, TestCardPileClass);
+	TestEqual(TEXT("Event Card Class"), TestEventHandler.Card.CardClass, TestCard);
 	return true;
 }
 
