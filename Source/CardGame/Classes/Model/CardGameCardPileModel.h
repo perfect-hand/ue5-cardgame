@@ -18,6 +18,7 @@ public:
 	UPROPERTY()
 	UCardGameCardPile* CardPileClass;
 
+	/** Indices into card game model cards array. */
 	UPROPERTY()
-	TArray<FCardGameCardModel> Cards;
+	TArray<int64> Cards;
 };

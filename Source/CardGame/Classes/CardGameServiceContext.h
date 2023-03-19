@@ -63,11 +63,14 @@ public:
 	void ShufflePlayerCardPile(AController* Player, UCardGameCardPile* CardPileClass);
 
 	UFUNCTION(BlueprintCallable, Category="Card Game|Card Piles")
-	void MoveCardBetweenGlobalCardPiles(UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
+	void MoveCardBetweenGlobalCardPiles(UCardGameCardPile* From, UCardGameCardPile* To, int64 CardInstanceId);
 	
 	UFUNCTION(BlueprintCallable, Category="Card Game|Card Piles")
-	void MoveCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex = 0);
+	void MoveCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To, int64 CardInstanceId);
 
+	UFUNCTION(BlueprintCallable, Category="Card Game|Card Piles")
+	void MoveLastCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From, UCardGameCardPile* To);
+	
 	FGameplayTagContainer GetCardGameplayTags(const ACardGameActor* Card) const;
 	
 	UFUNCTION(BlueprintCallable, Category="Card Game|Gameplay Tags")
@@ -84,7 +87,6 @@ public:
 private:
 	TWeakPtr<FCardGameModel> Model;
 	
-	TUniquePtr<FCardGameCardInstanceIdProvider> CardInstanceIdProvider;
 	TUniquePtr<FCardGameRandomNumberProvider> RandomNumberProvider;
 
 	TUniquePtr<FCardGameAttributeService> AttributeService;

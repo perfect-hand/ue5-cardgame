@@ -2,7 +2,6 @@
 
 #include "CardGameActor.h"
 #include "CardGamePlayerState.h"
-#include "Providers/CardGameCardInstanceIdProvider.h"
 #include "Providers/CardGameRandomNumberProvider.h"
 #include "Services/CardGameAttributeService.h"
 #include "Services/CardGameCardPileService.h"
@@ -13,11 +12,10 @@ void UCardGameServiceContext::Init(TWeakPtr<FCardGameModel> InModel)
 {
 	Model = InModel;
 	
-	CardInstanceIdProvider = MakeUnique<FCardGameCardInstanceIdProvider>();
 	RandomNumberProvider = MakeUnique<FCardGameRandomNumberProvider>();
 
 	AttributeService = MakeUnique<FCardGameAttributeService>();
-	CardPileService = MakeUnique<FCardGameCardPileService>(*CardInstanceIdProvider, *RandomNumberProvider);
+	CardPileService = MakeUnique<FCardGameCardPileService>(*RandomNumberProvider);
 	GameplayTagService = MakeUnique<FCardGameGameplayTagService>();
 	PlayerService = MakeUnique<FCardGamePlayerService>();
 	
@@ -147,13 +145,13 @@ void UCardGameServiceContext::ShufflePlayerCardPile(AController* Player, UCardGa
 }
 
 void UCardGameServiceContext::MoveCardBetweenGlobalCardPiles(UCardGameCardPile* From, UCardGameCardPile* To,
-	int32 CardIndex)
+	int64 CardInstanceId)
 {
-	CardPileService->MoveCardBetweenGlobalCardPiles(*Model.Pin(), From, To, CardIndex);
+	CardPileService->MoveCardBetweenGlobalCardPiles(*Model.Pin(), From, To, CardInstanceId);
 }
 
 void UCardGameServiceContext::MoveCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From,
-                                                             UCardGameCardPile* To, int32 CardIndex)
+                                                             UCardGameCardPile* To, int64 CardInstanceId)
 {
 	if (!IsValid(Player))
 	{
@@ -167,7 +165,25 @@ void UCardGameServiceContext::MoveCardBetweenPlayerCardPiles(AController* Player
 		return;
 	}
 
-	CardPileService->MoveCardBetweenPlayerCardPiles(*Model.Pin(), PlayerState->GetPlayerIndex(), From, To, CardIndex);
+	CardPileService->MoveCardBetweenPlayerCardPiles(*Model.Pin(), PlayerState->GetPlayerIndex(), From, To, CardInstanceId);
+}
+
+void UCardGameServiceContext::MoveLastCardBetweenPlayerCardPiles(AController* Player, UCardGameCardPile* From,
+	UCardGameCardPile* To)
+{
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	const ACardGamePlayerState* PlayerState = Player->GetPlayerState<ACardGamePlayerState>();
+
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	CardPileService->MoveLastCardBetweenPlayerCardPiles(*Model.Pin(), PlayerState->GetPlayerIndex(), From, To);
 }
 
 FGameplayTagContainer UCardGameServiceContext::GetCardGameplayTags(const ACardGameActor* Card) const

@@ -18,8 +18,7 @@ DECLARE_MULTICAST_DELEGATE_FourParams(FCardGameCardPileSystemCardAddedToPlayerCa
 class CARDGAME_API FCardGameCardPileService
 {
 public:
-	explicit FCardGameCardPileService(FCardGameCardInstanceIdProvider& CardInstanceIdProvider,
-		FCardGameRandomNumberProvider& RandomNumberProvider);
+	explicit FCardGameCardPileService(FCardGameRandomNumberProvider& RandomNumberProvider);
 
 	TOptional<FCardGameCardModel> GetCardModelByInstanceId(const FCardGameModel& Model, int64 InstanceId) const;
 	void AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const;
@@ -30,21 +29,22 @@ public:
 	void ShuffleGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
 	void ShufflePlayerCardPile(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* CardPileClass) const;
 	void MoveCardBetweenGlobalCardPiles(FCardGameModel& Model, UCardGameCardPile* From, UCardGameCardPile* To,
-		int32 CardIndex) const;
+		int64 CardInstanceId) const;
 	void MoveCardBetweenPlayerCardPiles(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* From,
-		UCardGameCardPile* To, int32 CardIndex) const;
-
+		UCardGameCardPile* To, int64 CardInstanceId) const;
+	void MoveLastCardBetweenPlayerCardPiles(FCardGameModel& Model, int32 PlayerIndex, UCardGameCardPile* From,
+		UCardGameCardPile* To) const;
+	
 	FCardGameCardPileSystemCardAddedToGlobalCardPileSignature OnCardAddedToGlobalCardPile;
 	FCardGameCardPileSystemCardAddedToPlayerCardPileSignature OnCardAddedToPlayerCardPile;
 	
 private:
-	FCardGameCardInstanceIdProvider& CardInstanceIdProvider;
 	FCardGameRandomNumberProvider& RandomNumberProvider;
 	
 	FCardGameCardPileModel* GetGlobalCardPile(FCardGameModel& Model, UCardGameCardPile* CardPileClass) const;
 	FCardGameCardPileModel* GetPlayerCardPile(FCardGamePlayerModel& Player, UCardGameCardPile* CardPileClass) const;
-	FCardGameCardModel AddCard(FCardGameCardPileModel& CardPile, int64 InstanceId, UCardGameCard* CardClass) const;
+	FCardGameCardModel AddCard(FCardGameModel& Model, UCardGameCard* CardClass) const;
 	void Shuffle(FCardGameCardPileModel& CardPile) const;
-	FCardGameCardModel MoveCardBetweenPiles(FCardGameCardPileModel& From, FCardGameCardPileModel& To,
-		int32 CardIndex) const;
+	void MoveCardBetweenPiles(FCardGameCardPileModel& From, FCardGameCardPileModel& To,
+		int64 CardInstanceId) const;
 };

@@ -7,7 +7,6 @@
 #include "Assets/CardGameCardPile.h"
 #include "Assets/CardGameConfiguration.h"
 #include "Model/CardGameModel.h"
-#include "Providers/CardGameCardInstanceIdProvider.h"
 #include "Providers/CardGameRandomNumberProvider.h"
 #include "Services/CardGameCardPileService.h"
 
@@ -81,20 +80,21 @@ bool FGetCardModelByInstanceIdGetsGlobalCardTest::RunTest(const FString& Paramet
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 	
 	FCardGameCardModel TestCard;
-	TestCard.InstanceId = 2;
+	TestCard.InstanceId = Model.Cards.Num();
 	TestCard.CardClass = TestCardClass;
-	Model.GlobalCardPiles[0].Cards.Add(TestCard);
+
+	int64 InstanceId = Model.Cards.Add(TestCard);
+	Model.GlobalCardPiles[0].Cards.Add(InstanceId);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	TOptional<FCardGameCardModel> FoundCard = CardPileService.GetCardModelByInstanceId(Model, TestCard.InstanceId);
 	
 	// ASSERT
 	TestTrue(TEXT("Has Found Card"), FoundCard.IsSet());
-	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 2LL);
+	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 0LL);
 	TestEqual(TEXT("Card Class"), FoundCard.GetValue().CardClass, TestCardClass);
 	return true;
 }
@@ -118,20 +118,21 @@ bool FGetCardModelByInstanceIdGetsPlayerCardTest::RunTest(const FString& Paramet
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 	
 	FCardGameCardModel TestCard;
-	TestCard.InstanceId = 2;
+	TestCard.InstanceId = Model.Cards.Num();
 	TestCard.CardClass = TestCardClass;
-	Model.Players[0].PlayerCardPiles[0].Cards.Add(TestCard);
+
+	int64 InstanceId = Model.Cards.Add(TestCard);
+	Model.Players[0].PlayerCardPiles[0].Cards.Add(InstanceId);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	TOptional<FCardGameCardModel> FoundCard = CardPileService.GetCardModelByInstanceId(Model, TestCard.InstanceId);
 	
 	// ASSERT
 	TestTrue(TEXT("Has Found Card"), FoundCard.IsSet());
-	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 2LL);
+	TestEqual(TEXT("Card Instance Id"), FoundCard.GetValue().InstanceId, 0LL);
 	TestEqual(TEXT("Card Class"), FoundCard.GetValue().CardClass, TestCardClass);
 	return true;
 }
@@ -154,9 +155,8 @@ bool FAddGlobalCardPilesTest::RunTest(const FString& Parameters)
 	Configuration->SetGlobalCardPileClasses(CardPileClasses);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddGlobalCardPiles(Model, Configuration);
 	
@@ -164,36 +164,6 @@ bool FAddGlobalCardPilesTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Num Global Card Piles"), Model.GlobalCardPiles.Num(), 2);
 	TestEqual(TEXT("Global Card Pile 0"), Model.GlobalCardPiles[0].CardPileClass, TestCardPile0);
 	TestEqual(TEXT("Global Card Pile 1"), Model.GlobalCardPiles[1].CardPileClass, TestCardPile1);
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToGlobalCardPileAssignsUniqueInstanceIdTest, "CardGame.CardPileService.AddCardToGlobalCardPileAssignsUniqueInstanceId", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
-
-bool FAddCardToGlobalCardPileAssignsUniqueInstanceIdTest::RunTest(const FString& Parameters)
-{
-	// ARRANGE
-	FCardGameModel Model;
-	
-	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
-	FCardGameCardPileModel TestCardPile;
-	TestCardPile.CardPileClass = TestCardPileClass;
-	Model.GlobalCardPiles.Add(TestCardPile);
-
-	UCardGameCard* TestCard = NewObject<UCardGameCard>();
-	
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
-	CardInstanceIdProvider.NewId();
-	CardInstanceIdProvider.NewId();
-	
-	// ACT
-	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
-	
-	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
-	
-	// ASSERT
-	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Card Instance Id"), Model.GlobalCardPiles[0].Cards[0].InstanceId, 3LL);
 	return true;
 }
 
@@ -212,15 +182,14 @@ bool FAddCardToGlobalCardPileSetsCardClassTest::RunTest(const FString& Parameter
 	UCardGameCard* TestCard = NewObject<UCardGameCard>();
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Card Class"), Model.GlobalCardPiles[0].Cards[0].CardClass, TestCard);
+	TestEqual(TEXT("Card Class"), Model.Cards[0].CardClass, TestCard);
 	return true;
 }
 
@@ -247,19 +216,18 @@ bool FAddCardToGlobalCardPileSetsAttributesTest::RunTest(const FString& Paramete
 	TestCard->SetInitialAttributes(InitialAttributes);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Num Attributes"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes.Num(), 2);
-	TestEqual(TEXT("Attribute 1 Class"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
-	TestEqual(TEXT("Attribute 1 Value"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[0].Value, 2);
-	TestEqual(TEXT("Attribute 2 Class"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
-	TestEqual(TEXT("Attribute 2 Value"), Model.GlobalCardPiles[0].Cards[0].CardModel.Attributes[1].Value, 3);
+	TestEqual(TEXT("Num Attributes"), Model.Cards[0].CardModel.Attributes.Num(), 2);
+	TestEqual(TEXT("Attribute 1 Class"), Model.Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
+	TestEqual(TEXT("Attribute 1 Value"), Model.Cards[0].CardModel.Attributes[0].Value, 2);
+	TestEqual(TEXT("Attribute 2 Class"), Model.Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
+	TestEqual(TEXT("Attribute 2 Value"), Model.Cards[0].CardModel.Attributes[1].Value, 3);
 	return true;
 }
 
@@ -286,16 +254,15 @@ bool FAddCardToGlobalCardPileSetsGameplayTagsTest::RunTest(const FString& Parame
 	TestCard->SetInitialGameplayTags(TestGameplayTags);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToGlobalCardPile(Model, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
-	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.GlobalCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
-	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.GlobalCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
 	return true;
 }
 
@@ -314,9 +281,8 @@ bool FAddCardToGlobalCardPileRaisesEventTest::RunTest(const FString& Parameters)
 	UCardGameCard* TestCard = NewObject<UCardGameCard>();
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	FCardGameCardPileService CardPileService(RandomNumberProvider);
 
 	CardGameCardPileServiceTest::FOnCardAddedToGlobalCardPileTestEventHandler TestEventHandler;
 	CardPileService.OnCardAddedToGlobalCardPile.AddRaw(&TestEventHandler,
@@ -327,40 +293,6 @@ bool FAddCardToGlobalCardPileRaisesEventTest::RunTest(const FString& Parameters)
 	// ASSERT
 	TestEqual(TEXT("Event Card Pile Class"), TestEventHandler.CardPileClass, TestCardPileClass);
 	TestEqual(TEXT("Event Card Class"), TestEventHandler.Card.CardClass, TestCard);
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAddCardToPlayerCardPileAssignsUniqueInstanceIdTest, "CardGame.CardPileService.AddCardToPlayerCardPileAssignsUniqueInstanceId", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
-
-bool FAddCardToPlayerCardPileAssignsUniqueInstanceIdTest::RunTest(const FString& Parameters)
-{
-	// ARRANGE
-	FCardGameModel Model;
-	
-	UCardGameCardPile* TestCardPileClass = NewObject<UCardGameCardPile>();
-	FCardGameCardPileModel TestCardPile;
-	TestCardPile.CardPileClass = TestCardPileClass;
-
-	FCardGamePlayerModel Player;
-	Player.PlayerIndex = 2;
-	Player.PlayerCardPiles.Add(TestCardPile);
-	Model.Players.Add(Player);
-
-	UCardGameCard* TestCard = NewObject<UCardGameCard>();
-	
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
-	CardInstanceIdProvider.NewId();
-	CardInstanceIdProvider.NewId();
-	
-	// ACT
-	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
-	
-	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
-	
-	// ASSERT
-	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Card Instance Id"), Model.Players[0].PlayerCardPiles[0].Cards[0].InstanceId, 3LL);
 	return true;
 }
 
@@ -383,15 +315,14 @@ bool FAddCardToPlayerCardPileSetsCardClassTest::RunTest(const FString& Parameter
 	UCardGameCard* TestCard = NewObject<UCardGameCard>();
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Card Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardClass, TestCard);
+	TestEqual(TEXT("Card Class"), Model.Cards[0].CardClass, TestCard);
 	return true;
 }
 
@@ -422,19 +353,18 @@ bool FAddCardToPlayerCardPileSetsAttributesTest::RunTest(const FString& Paramete
 	TestCard->SetInitialAttributes(InitialAttributes);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Num Attributes"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes.Num(), 2);
-	TestEqual(TEXT("Attribute 1 Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
-	TestEqual(TEXT("Attribute 1 Value"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[0].Value, 2);
-	TestEqual(TEXT("Attribute 2 Class"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
-	TestEqual(TEXT("Attribute 2 Value"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.Attributes[1].Value, 3);
+	TestEqual(TEXT("Num Attributes"), Model.Cards[0].CardModel.Attributes.Num(), 2);
+	TestEqual(TEXT("Attribute 1 Class"), Model.Cards[0].CardModel.Attributes[0].Attribute, TestAttribute1);
+	TestEqual(TEXT("Attribute 1 Value"), Model.Cards[0].CardModel.Attributes[0].Value, 2);
+	TestEqual(TEXT("Attribute 2 Class"), Model.Cards[0].CardModel.Attributes[1].Attribute, TestAttribute2);
+	TestEqual(TEXT("Attribute 2 Value"), Model.Cards[0].CardModel.Attributes[1].Value, 3);
 	return true;
 }
 
@@ -465,16 +395,15 @@ bool FAddCardToPlayerCardPileSetsGameplayTagsTest::RunTest(const FString& Parame
 	TestCard->SetInitialGameplayTags(TestGameplayTags);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
 	CardPileService.AddCardToPlayerCardPile(Model, Player.PlayerIndex, TestCardPileClass, TestCard);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
-	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
-	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Players[0].PlayerCardPiles[0].Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Cards[0].CardModel.GameplayTags.HasTag(TestTagA));
+	TestTrue(TEXT("Card Has Gameplay Tag A"), Model.Cards[0].CardModel.GameplayTags.HasTag(TestTagB));
 	return true;
 }
 
@@ -497,9 +426,8 @@ bool FAddCardToPlayerCardPileRaisesEventTest::RunTest(const FString& Parameters)
 	UCardGameCard* TestCard = NewObject<UCardGameCard>();
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	FCardGameCardPileService CardPileService(RandomNumberProvider);
 
 	CardGameCardPileServiceTest::FOnCardAddedToPlayerCardPileTestEventHandler TestEventHandler;
 	CardPileService.OnCardAddedToPlayerCardPile.AddRaw(&TestEventHandler,
@@ -523,14 +451,17 @@ bool FMoveCardBetweenGlobalCardPilesRemovesCardFromOldPileTest::RunTest(const FS
 
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 
-	FCardGameCardModel MovedCard(1, TestCardClass);
-	FCardGameCardModel UnchangedCard(2, TestCardClass);
+	FCardGameCardModel MovedCard(0, TestCardClass);
+	FCardGameCardModel UnchangedCard(1, TestCardClass);
+
+	Model.Cards.Add(MovedCard);
+	Model.Cards.Add(UnchangedCard);
 	
 	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
 	FCardGameCardPileModel OldCardPile;
 	OldCardPile.CardPileClass = OldCardPileClass;
-	OldCardPile.Cards.Add(MovedCard);
-	OldCardPile.Cards.Add(UnchangedCard);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
 	Model.GlobalCardPiles.Add(OldCardPile);
 
 	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
@@ -539,15 +470,14 @@ bool FMoveCardBetweenGlobalCardPilesRemovesCardFromOldPileTest::RunTest(const FS
 	Model.GlobalCardPiles.Add(NewCardPile);
 
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
-	CardPileService.MoveCardBetweenGlobalCardPiles(Model, OldCardPileClass, NewCardPileClass, 0);
+	CardPileService.MoveCardBetweenGlobalCardPiles(Model, OldCardPileClass, NewCardPileClass, MovedCard.InstanceId);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Remaining Card Instance Id"), Model.GlobalCardPiles[0].Cards[0].InstanceId, UnchangedCard.InstanceId);
+	TestEqual(TEXT("Remaining Card Instance Id"), Model.GlobalCardPiles[0].Cards[0], UnchangedCard.InstanceId);
 	return true;
 }
 
@@ -560,14 +490,17 @@ bool FMoveCardBetweenGlobalCardPilesAddsCardToNewPileTest::RunTest(const FString
 
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 
-	FCardGameCardModel MovedCard(1, TestCardClass);
-	FCardGameCardModel UnchangedCard(2, TestCardClass);
+	FCardGameCardModel MovedCard(0, TestCardClass);
+	FCardGameCardModel UnchangedCard(1, TestCardClass);
+
+	Model.Cards.Add(MovedCard);
+	Model.Cards.Add(UnchangedCard);
 	
 	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
 	FCardGameCardPileModel OldCardPile;
 	OldCardPile.CardPileClass = OldCardPileClass;
-	OldCardPile.Cards.Add(MovedCard);
-	OldCardPile.Cards.Add(UnchangedCard);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
 	Model.GlobalCardPiles.Add(OldCardPile);
 
 	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
@@ -576,15 +509,14 @@ bool FMoveCardBetweenGlobalCardPilesAddsCardToNewPileTest::RunTest(const FString
 	Model.GlobalCardPiles.Add(NewCardPile);
 
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
-	CardPileService.MoveCardBetweenGlobalCardPiles(Model, OldCardPileClass, NewCardPileClass, 0);
+	CardPileService.MoveCardBetweenGlobalCardPiles(Model, OldCardPileClass, NewCardPileClass, MovedCard.InstanceId);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.GlobalCardPiles[1].Cards.Num(), 1);
-	TestEqual(TEXT("New Card Instance Id"), Model.GlobalCardPiles[1].Cards[0].InstanceId, MovedCard.InstanceId);
+	TestEqual(TEXT("New Card Instance Id"), Model.GlobalCardPiles[1].Cards[0], MovedCard.InstanceId);
 	return true;
 }
 
@@ -600,14 +532,17 @@ bool FMoveCardBetweenPlayerCardPilesRemovesCardFromOldPileTest::RunTest(const FS
 	
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 
-	FCardGameCardModel MovedCard(1, TestCardClass);
-	FCardGameCardModel UnchangedCard(2, TestCardClass);
+	FCardGameCardModel MovedCard(0, TestCardClass);
+	FCardGameCardModel UnchangedCard(1, TestCardClass);
+
+	Model.Cards.Add(MovedCard);
+	Model.Cards.Add(UnchangedCard);
 	
 	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
 	FCardGameCardPileModel OldCardPile;
 	OldCardPile.CardPileClass = OldCardPileClass;
-	OldCardPile.Cards.Add(MovedCard);
-	OldCardPile.Cards.Add(UnchangedCard);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
 	Player.PlayerCardPiles.Add(OldCardPile);
 
 	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
@@ -618,15 +553,14 @@ bool FMoveCardBetweenPlayerCardPilesRemovesCardFromOldPileTest::RunTest(const FS
 	Model.Players.Add(Player);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
-	CardPileService.MoveCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass, 0);
+	CardPileService.MoveCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass, MovedCard.InstanceId);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
-	TestEqual(TEXT("Remaining Card Instance Id"), Model.Players[0].PlayerCardPiles[0].Cards[0].InstanceId, UnchangedCard.InstanceId);
+	TestEqual(TEXT("Remaining Card Instance Id"), Model.Players[0].PlayerCardPiles[0].Cards[0], UnchangedCard.InstanceId);
 	return true;
 }
 
@@ -642,14 +576,17 @@ bool FMoveCardBetweenPlayerCardPilesAddsCardToNewPileTest::RunTest(const FString
 	
 	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
 
-	FCardGameCardModel MovedCard(1, TestCardClass);
-	FCardGameCardModel UnchangedCard(2, TestCardClass);
+	FCardGameCardModel MovedCard(0, TestCardClass);
+	FCardGameCardModel UnchangedCard(1, TestCardClass);
+
+	Model.Cards.Add(MovedCard);
+	Model.Cards.Add(UnchangedCard);
 	
 	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
 	FCardGameCardPileModel OldCardPile;
 	OldCardPile.CardPileClass = OldCardPileClass;
-	OldCardPile.Cards.Add(MovedCard);
-	OldCardPile.Cards.Add(UnchangedCard);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
 	Player.PlayerCardPiles.Add(OldCardPile);
 
 	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
@@ -660,14 +597,101 @@ bool FMoveCardBetweenPlayerCardPilesAddsCardToNewPileTest::RunTest(const FString
 	Model.Players.Add(Player);
 	
 	// ACT
-	FCardGameCardInstanceIdProvider CardInstanceIdProvider;
 	FCardGameRandomNumberProvider RandomNumberProvider;
-	const FCardGameCardPileService CardPileService(CardInstanceIdProvider, RandomNumberProvider);
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
 	
-	CardPileService.MoveCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass, 0);
+	CardPileService.MoveCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass, MovedCard.InstanceId);
 	
 	// ASSERT
 	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[1].Cards.Num(), 1);
-	TestEqual(TEXT("New Card Instance Id"), Model.Players[0].PlayerCardPiles[1].Cards[0].InstanceId, MovedCard.InstanceId);
+	TestEqual(TEXT("New Card Instance Id"), Model.Players[0].PlayerCardPiles[1].Cards[0], MovedCard.InstanceId);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMoveLastCardBetweenPlayerCardPilesRemovesCardFromOldPileTest, "CardGame.CardPileService.MoveLastCardBetweenPlayerCardPilesRemovesCardFromOldPile", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FMoveLastCardBetweenPlayerCardPilesRemovesCardFromOldPileTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	
+	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
+
+	FCardGameCardModel UnchangedCard(0, TestCardClass);
+	FCardGameCardModel MovedCard(1, TestCardClass);
+
+	Model.Cards.Add(UnchangedCard);
+	Model.Cards.Add(MovedCard);
+
+	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel OldCardPile;
+	OldCardPile.CardPileClass = OldCardPileClass;
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	Player.PlayerCardPiles.Add(OldCardPile);
+
+	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel NewCardPile;
+	NewCardPile.CardPileClass = NewCardPileClass;
+	Player.PlayerCardPiles.Add(NewCardPile);
+
+	Model.Players.Add(Player);
+	
+	// ACT
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
+	
+	CardPileService.MoveLastCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[0].Cards.Num(), 1);
+	TestEqual(TEXT("Remaining Card Instance Id"), Model.Players[0].PlayerCardPiles[0].Cards[0], UnchangedCard.InstanceId);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FMoveLastCardBetweenPlayerCardPilesAddsCardToNewPileTest, "CardGame.CardPileService.MoveCardBetweenPlayerCardPilesAddsCardToNewPile", EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FMoveLastCardBetweenPlayerCardPilesAddsCardToNewPileTest::RunTest(const FString& Parameters)
+{
+	// ARRANGE
+	FCardGameModel Model;
+
+	FCardGamePlayerModel Player;
+	Player.PlayerIndex = 2;
+	
+	UCardGameCard* TestCardClass = NewObject<UCardGameCard>();
+
+	FCardGameCardModel UnchangedCard(0, TestCardClass);
+	FCardGameCardModel MovedCard(1, TestCardClass);
+
+	Model.Cards.Add(UnchangedCard);
+	Model.Cards.Add(MovedCard);
+	
+	UCardGameCardPile* OldCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel OldCardPile;
+	OldCardPile.CardPileClass = OldCardPileClass;
+	OldCardPile.Cards.Add(UnchangedCard.InstanceId);
+	OldCardPile.Cards.Add(MovedCard.InstanceId);
+	Player.PlayerCardPiles.Add(OldCardPile);
+
+	UCardGameCardPile* NewCardPileClass = NewObject<UCardGameCardPile>();
+	FCardGameCardPileModel NewCardPile;
+	NewCardPile.CardPileClass = NewCardPileClass;
+	Player.PlayerCardPiles.Add(NewCardPile);
+
+	Model.Players.Add(Player);
+	
+	// ACT
+	FCardGameRandomNumberProvider RandomNumberProvider;
+	const FCardGameCardPileService CardPileService(RandomNumberProvider);
+	
+	CardPileService.MoveLastCardBetweenPlayerCardPiles(Model, Player.PlayerIndex, OldCardPileClass, NewCardPileClass);
+	
+	// ASSERT
+	TestEqual(TEXT("Num Cards"), Model.Players[0].PlayerCardPiles[1].Cards.Num(), 1);
+	TestEqual(TEXT("New Card Instance Id"), Model.Players[0].PlayerCardPiles[1].Cards[0], MovedCard.InstanceId);
 	return true;
 }

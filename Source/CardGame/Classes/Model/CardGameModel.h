@@ -24,4 +24,8 @@ public:
 
 	UPROPERTY()
 	TArray<FCardGamePlayerModel> Players;
+
+	/** Dense array of all cards, no matter if in any global or player card pile, or not in play anymore. */
+	UPROPERTY()
+	TArray<FCardGameCardModel> Cards;
 };

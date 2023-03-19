@@ -18,7 +18,8 @@ void UCardGameActorManager::Init(UCardGameServiceContext* InContext)
 	{
 		for (int32 Index = 0; Index < CardPile.Cards.Num(); ++Index)
 		{
-			OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Index, CardPile.Cards[Index]);
+			const int64 InstanceId = CardPile.Cards[Index];
+			OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Index, Model->Cards[InstanceId]);
 		}
 	}
 
@@ -28,7 +29,8 @@ void UCardGameActorManager::Init(UCardGameServiceContext* InContext)
 		{
 			for (int32 Index = 0; Index < CardPile.Cards.Num(); ++Index)
 			{
-				OnCardAddedToGlobalCardPile(CardPile.CardPileClass, Index, CardPile.Cards[Index]);
+				const int64 InstanceId = CardPile.Cards[Index];
+				OnCardAddedToPlayerCardPile(Player.PlayerIndex, CardPile.CardPileClass, Index, Model->Cards[InstanceId]);
 			}
 		}
 	}

@@ -6,45 +6,17 @@
 #include "Assets/CardGameConfiguration.h"
 #include "Model/CardGameCardPileModel.h"
 #include "Model/CardGameModel.h"
-#include "Providers/CardGameCardInstanceIdProvider.h"
 #include "Providers/CardGameRandomNumberProvider.h"
 
-FCardGameCardPileService::FCardGameCardPileService(FCardGameCardInstanceIdProvider& CardInstanceIdProvider,
-                                                 FCardGameRandomNumberProvider& RandomNumberProvider)
-	: CardInstanceIdProvider(CardInstanceIdProvider),
-	RandomNumberProvider(RandomNumberProvider)
+FCardGameCardPileService::FCardGameCardPileService(FCardGameRandomNumberProvider& RandomNumberProvider)
+	: RandomNumberProvider(RandomNumberProvider)
 {
 }
 
 TOptional<FCardGameCardModel> FCardGameCardPileService::GetCardModelByInstanceId(const FCardGameModel& Model,
 	int64 InstanceId) const
 {
-	for (const FCardGameCardPileModel& GlobalCardPile : Model.GlobalCardPiles)
-	{
-		for (const FCardGameCardModel& Card : GlobalCardPile.Cards)
-		{
-			if (Card.InstanceId == InstanceId)
-			{
-				return Card;
-			}
-		}
-	}
-
-	for (const FCardGamePlayerModel& Player : Model.Players)
-	{
-		for (const FCardGameCardPileModel& GlobalCardPile : Player.PlayerCardPiles)
-		{
-			for (const FCardGameCardModel& Card : GlobalCardPile.Cards)
-			{
-				if (Card.InstanceId == InstanceId)
-				{
-					return Card;
-				}
-			}
-		}
-	}
-
-	return TOptional<FCardGameCardModel>();
+	return Model.Cards.IsValidIndex(InstanceId) ? Model.Cards[InstanceId] : TOptional<FCardGameCardModel>();
 }
 
 void FCardGameCardPileService::AddGlobalCardPiles(FCardGameModel& Model, UCardGameConfiguration* Configuration) const
@@ -66,12 +38,12 @@ void FCardGameCardPileService::AddCardToGlobalCardPile(FCardGameModel& Model, UC
 	{
 		return;
 	}
-
-	const int64 NewCardInstanceId = CardInstanceIdProvider.NewId();
-	const FCardGameCardModel NewCard = AddCard(*CardPile, NewCardInstanceId, CardClass);
+	
+	const FCardGameCardModel NewCard = AddCard(Model, CardClass);
+	CardPile->Cards.Add(NewCard.InstanceId);
 	
 	UE_LOG(LogCardGame, Log, TEXT("Added %s (%d) to global card pile %s."),
-		*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName());
+		*CardClass->GetName(), NewCard.InstanceId, *CardPileClass->GetName());
 
 	// Notify listeners.
 	OnCardAddedToGlobalCardPile.Broadcast(CardPileClass, CardPile->Cards.Num(), NewCard);
@@ -93,12 +65,12 @@ void FCardGameCardPileService::AddCardToPlayerCardPile(FCardGameModel& Model, ui
 		{
 			return;
 		}
-
-		const int64 NewCardInstanceId = CardInstanceIdProvider.NewId();
-		const FCardGameCardModel NewCard = AddCard(*CardPile, NewCardInstanceId, CardClass);
+		
+		const FCardGameCardModel NewCard = AddCard(Model, CardClass);
+		CardPile->Cards.Add(NewCard.InstanceId);
 	
 		UE_LOG(LogCardGame, Log, TEXT("Added %s (%d) to %s of player %d."),
-			*CardClass->GetName(), NewCardInstanceId, *CardPileClass->GetName(), Player.PlayerIndex);
+			*CardClass->GetName(), NewCard.InstanceId, *CardPileClass->GetName(), Player.PlayerIndex);
 
 		// Notify listeners.
 		OnCardAddedToPlayerCardPile.Broadcast(PlayerIndex, CardPileClass, CardPile->Cards.Num(), NewCard);
@@ -145,7 +117,7 @@ void FCardGameCardPileService::ShufflePlayerCardPile(FCardGameModel& Model, int3
 }
 
 void FCardGameCardPileService::MoveCardBetweenGlobalCardPiles(FCardGameModel& Model, UCardGameCardPile* From,
-	UCardGameCardPile* To, int32 CardIndex) const
+	UCardGameCardPile* To, int64 CardInstanceId) const
 {
 	FCardGameCardPileModel* FromCardPile = GetGlobalCardPile(Model, From);
 	FCardGameCardPileModel* ToCardPile = GetGlobalCardPile(Model, To);
@@ -155,14 +127,15 @@ void FCardGameCardPileService::MoveCardBetweenGlobalCardPiles(FCardGameModel& Mo
 		return;
 	}
 
-	const FCardGameCardModel Card = MoveCardBetweenPiles(*FromCardPile, *ToCardPile, CardIndex);
+	MoveCardBetweenPiles(*FromCardPile, *ToCardPile, CardInstanceId);
 
+	const FCardGameCardModel Card = Model.Cards[CardInstanceId];
 	UE_LOG(LogCardGame, Log, TEXT("Moved %s (%d) from global card pile %s to %s."), *Card.CardClass->GetName(),
 		Card.InstanceId, *From->GetName(), *To->GetName());
 }
 
 void FCardGameCardPileService::MoveCardBetweenPlayerCardPiles(FCardGameModel& Model, int32 PlayerIndex,
-	UCardGameCardPile* From, UCardGameCardPile* To, int32 CardIndex) const
+	UCardGameCardPile* From, UCardGameCardPile* To, int64 CardInstanceId) const
 {
 	for (FCardGamePlayerModel& Player : Model.Players)
 	{
@@ -179,8 +152,38 @@ void FCardGameCardPileService::MoveCardBetweenPlayerCardPiles(FCardGameModel& Mo
 			return;
 		}
 
-		const FCardGameCardModel Card = MoveCardBetweenPiles(*FromCardPile, *ToCardPile, CardIndex);
+		MoveCardBetweenPiles(*FromCardPile, *ToCardPile, CardInstanceId);
 
+		const FCardGameCardModel Card = Model.Cards[CardInstanceId];
+		UE_LOG(LogCardGame, Log, TEXT("Moved %s (%d) of player %d from %s to %s."), *Card.CardClass->GetName(),
+			Card.InstanceId, Player.PlayerIndex, *From->GetName(), *To->GetName());
+		return;
+	}
+}
+
+void FCardGameCardPileService::MoveLastCardBetweenPlayerCardPiles(FCardGameModel& Model, int32 PlayerIndex,
+	UCardGameCardPile* From, UCardGameCardPile* To) const
+{
+	for (FCardGamePlayerModel& Player : Model.Players)
+	{
+		if (Player.PlayerIndex != PlayerIndex)
+		{
+			continue;
+		}
+
+		FCardGameCardPileModel* FromCardPile = GetPlayerCardPile(Player, From);
+		FCardGameCardPileModel* ToCardPile = GetPlayerCardPile(Player, To);
+	
+		if (FromCardPile == nullptr || ToCardPile == nullptr)
+		{
+			return;
+		}
+
+		const int64 CardInstanceId = FromCardPile->Cards.Last();
+		FromCardPile->Cards.RemoveAt(FromCardPile->Cards.Num() - 1);
+		ToCardPile->Cards.Add(CardInstanceId);
+
+		const FCardGameCardModel Card = Model.Cards[CardInstanceId];
 		UE_LOG(LogCardGame, Log, TEXT("Moved %s (%d) of player %d from %s to %s."), *Card.CardClass->GetName(),
 			Card.InstanceId, Player.PlayerIndex, *From->GetName(), *To->GetName());
 		return;
@@ -188,7 +191,7 @@ void FCardGameCardPileService::MoveCardBetweenPlayerCardPiles(FCardGameModel& Mo
 }
 
 FCardGameCardPileModel* FCardGameCardPileService::GetGlobalCardPile(FCardGameModel& Model,
-	UCardGameCardPile* CardPileClass) const
+                                                                    UCardGameCardPile* CardPileClass) const
 {
 	for (FCardGameCardPileModel& CardPile : Model.GlobalCardPiles)
 	{
@@ -215,11 +218,10 @@ FCardGameCardPileModel* FCardGameCardPileService::GetPlayerCardPile(FCardGamePla
 	return nullptr;
 }
 
-FCardGameCardModel FCardGameCardPileService::AddCard(FCardGameCardPileModel& CardPile, int64 InstanceId,
-                                                    UCardGameCard* CardClass) const
+FCardGameCardModel FCardGameCardPileService::AddCard(FCardGameModel& Model, UCardGameCard* CardClass) const
 {
 	FCardGameCardModel NewCard;
-	NewCard.InstanceId = InstanceId;
+	NewCard.InstanceId = Model.Cards.Num();
 	NewCard.CardClass = CardClass;
 	
 	for (const auto& InitialAttributeValue : CardClass->GetInitialAttributes())
@@ -230,13 +232,13 @@ FCardGameCardModel FCardGameCardPileService::AddCard(FCardGameCardPileModel& Car
 
 	NewCard.CardModel.GameplayTags.AppendTags(CardClass->GetInitialGameplayTags());
 	
-	CardPile.Cards.Add(NewCard);
+	Model.Cards.Add(NewCard);
 	return NewCard;
 }
 
 void FCardGameCardPileService::Shuffle(FCardGameCardPileModel& CardPile) const
 {
-	TArray<FCardGameCardModel> ShuffledCards;
+	TArray<int64> ShuffledCards;
 
 	while (!CardPile.Cards.IsEmpty())
 	{
@@ -248,11 +250,18 @@ void FCardGameCardPileService::Shuffle(FCardGameCardPileModel& CardPile) const
 	CardPile.Cards = ShuffledCards;
 }
 
-FCardGameCardModel FCardGameCardPileService::MoveCardBetweenPiles(FCardGameCardPileModel& From, FCardGameCardPileModel& To,
-	int32 CardIndex) const
+void FCardGameCardPileService::MoveCardBetweenPiles(FCardGameCardPileModel& From, FCardGameCardPileModel& To, int64 CardInstanceId) const
 {
-	FCardGameCardModel Card = From.Cards[CardIndex];
-	To.Cards.Add(Card);
-	From.Cards.RemoveAt(CardIndex);
-	return Card;
+	// Find in pile.
+	for (int32 Index = 0; Index < From.Cards.Num(); ++Index)
+	{
+		if (From.Cards[Index] != CardInstanceId)
+		{
+			continue;
+		}
+		
+		From.Cards.RemoveAt(Index);
+		To.Cards.Add(CardInstanceId);
+		return;
+	}
 }
